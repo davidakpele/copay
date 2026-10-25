@@ -21,7 +21,7 @@ export interface Transaction {
   isCredit: boolean;
 }
 
-export type NavItem = 'home' | 'transfers' | 'cards' | 'wallets' | 'bills' | 'transactions' | 'settings';
+export type NavItem = 'home' | 'transfers' | 'cards' | 'wallets' | 'bills' | 'transactions' | 'settings' | 'exchange' | 'refer' | 'investments' | 'support';
 
 export type NotificationType = 'transfer' | 'bill' | 'airtime' | 'alert';
 

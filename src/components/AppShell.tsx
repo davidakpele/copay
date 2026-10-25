@@ -17,11 +17,16 @@ const navRouteMap: Record<NavItem, string> = {
   bills:        '/bills',
   transactions: '/transactions',
   settings:     '/settings',
+  exchange:     '/exchange',
+  refer:        '/',
+  investments:  '/',
+  support:      '/',
 };
 
-const routeNavMap: Record<string, NavItem> = Object.fromEntries(
-  Object.entries(navRouteMap).map(([k, v]) => [v, k as NavItem])
-);
+const routeNavMap: Record<string, NavItem> = {
+  ...Object.fromEntries(Object.entries(navRouteMap).map(([k, v]) => [v, k as NavItem])),
+  '/profile': 'settings',
+};
 
 interface AppShellProps {
   children: React.ReactNode;
