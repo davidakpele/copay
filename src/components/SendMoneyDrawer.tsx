@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useWallet } from '../contexts/WalletContext';
 import { XIcon, CopayIcon, BankIcon, CheckCircleIcon, SpinnerIcon, ChevronRightIcon } from './Icons';
 
 type SendOption = 'copay' | 'bank';
@@ -10,6 +11,22 @@ const DEMO_BANKS = [
   'Wema Bank', 'Sterling Bank', 'Heritage Bank', 'Providus Bank',
   'Kuda Bank', 'Opay', 'Palmpay', 'Moniepoint',
 ];
+
+function formatWithCommas(raw: string): string {
+  const digits = raw.replace(/[^0-9.]/g, '');
+  const parts  = digits.split('.');
+  parts[0]     = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return parts.length > 1 ? `${parts[0]}.${parts[1].slice(0, 2)}` : parts[0];
+}
+
+function parseAmount(raw: string): number {
+  return parseFloat(raw.replace(/,/g, '')) || 0;
+}
+
+function formatFinal(symbol: string, raw: string): string {
+  const num = parseAmount(raw);
+  return `${symbol}${num.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
 
 interface PinInputProps {
   value: string;
@@ -33,8 +50,8 @@ function PinInput({ value, onChange }: PinInputProps) {
   function handleChange(i: number, e: React.ChangeEvent<HTMLInputElement>) {
     const char = e.target.value.replace(/\D/g, '').slice(-1);
     if (!char) return;
-    const next = value.split('');
-    next[i] = char;
+    const next    = value.split('');
+    next[i]       = char;
     const updated = next.join('').slice(0, 4);
     onChange(updated);
     if (i < 3) inputs.current[i + 1]?.focus();
@@ -66,17 +83,22 @@ interface SendMoneyDrawerProps {
 }
 
 export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps) {
-  const [step, setStep]                   = useState<Step>('select');
-  const [option, setOption]               = useState<SendOption | null>(null);
-  const [username, setUsername]           = useState('');
-  const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'valid' | 'invalid'>('idle');
-  const [resolvedName, setResolvedName]   = useState('');
-  const [accountNumber, setAccountNumber] = useState('');
-  const [selectedBank, setSelectedBank]   = useState('');
-  const [acctStatus, setAcctStatus]       = useState<'idle' | 'checking' | 'valid' | 'invalid'>('idle');
-  const [resolvedAcct, setResolvedAcct]   = useState('');
-  const [amount, setAmount]               = useState('');
-  const [pin, setPin]                     = useState('');
+  const { activeWallet }  = useWallet();
+  const currencySymbol    = activeWallet.symbol;
+  const currencyCode      = activeWallet.currency;
+
+  const [step, setStep]                       = useState<Step>('select');
+  const [option, setOption]                   = useState<SendOption | null>(null);
+  const [username, setUsername]               = useState('');
+  const [usernameStatus, setUsernameStatus]   = useState<'idle' | 'checking' | 'valid' | 'invalid'>('idle');
+  const [resolvedName, setResolvedName]       = useState('');
+  const [accountNumber, setAccountNumber]     = useState('');
+  const [selectedBank, setSelectedBank]       = useState('');
+  const [acctStatus, setAcctStatus]           = useState<'idle' | 'checking' | 'valid' | 'invalid'>('idle');
+  const [resolvedAcct, setResolvedAcct]       = useState('');
+  const [amountRaw, setAmountRaw]             = useState('');
+  const [pin, setPin]                         = useState('');
+  const [txnRef]                              = useState(() => `TXN${Date.now().toString().slice(-8)}`);
 
   const usernameTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const acctTimer     = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -91,7 +113,7 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
     setSelectedBank('');
     setAcctStatus('idle');
     setResolvedAcct('');
-    setAmount('');
+    setAmountRaw('');
     setPin('');
   }, []);
 
@@ -99,11 +121,13 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
     if (!open) { setTimeout(reset, 300); }
   }, [open, reset]);
 
-  function handleClose() { onClose(); }
-
-  function handleSelectOption(opt: SendOption) {
-    setOption(opt);
-    setStep('form');
+  function handleAmountChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const raw     = e.target.value.replace(/[^0-9.]/g, '');
+    const parts   = raw.split('.');
+    const cleaned = parts.length > 1
+      ? `${parts[0]}.${parts.slice(1).join('').slice(0, 2)}`
+      : parts[0];
+    setAmountRaw(formatWithCommas(cleaned));
   }
 
   function handleUsernameBlur() {
@@ -136,15 +160,30 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
     setTimeout(() => setStep('success'), 2200);
   }
 
-  function handleDone() { handleClose(); }
+  function handleDone() { onClose(); }
 
-  const canProcessCopay  = usernameStatus === 'valid' && amount.trim() !== '';
-  const canProcessBank   = acctStatus === 'valid' && amount.trim() !== '';
-  const canComplete      = pin.length === 4;
+  const amountNum       = parseAmount(amountRaw);
+  const hasAmount       = amountNum > 0;
+  const canProcessCopay = usernameStatus === 'valid' && hasAmount;
+  const canProcessBank  = acctStatus === 'valid' && hasAmount;
+  const canComplete     = pin.length === 4;
+
+  const recipientDisplay = option === 'copay'
+    ? resolvedName || username
+    : resolvedAcct
+      ? `${resolvedAcct} · ${accountNumber}`
+      : accountNumber;
+
+  const bankDisplay = option === 'bank' && selectedBank ? selectedBank : '';
+  const amountDisplay = formatFinal(currencySymbol, amountRaw);
+
+  const txnDate = new Date().toLocaleDateString('en-GB', {
+    day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
+  });
 
   return (
     <>
-      {open && <div className="drawer-overlay" onClick={handleClose} aria-hidden="true" />}
+      {open && <div className="drawer-overlay" onClick={onClose} aria-hidden="true" />}
 
       <aside className={`send-drawer${open ? ' send-drawer--open' : ''}`} aria-label="Send Money" aria-hidden={!open}>
 
@@ -155,14 +194,13 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
                 <h2 className="send-drawer__title">Send Money</h2>
                 <p className="send-drawer__subtitle">Choose how you want to send</p>
               </div>
-              <button className="send-drawer__close" onClick={handleClose} type="button" aria-label="Close">
+              <button className="send-drawer__close" onClick={onClose} type="button" aria-label="Close">
                 <XIcon size={18} color="#555" />
               </button>
             </div>
-
             <div className="send-drawer__body">
               <div className="send-options">
-                <button className="send-option-card" type="button" onClick={() => handleSelectOption('copay')}>
+                <button className="send-option-card" type="button" onClick={() => { setOption('copay'); setStep('form'); }}>
                   <span className="send-option-card__icon send-option-card__icon--copay">
                     <CopayIcon size={20} color="#fff" />
                   </span>
@@ -173,7 +211,7 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
                   <ChevronRightIcon size={18} color="#bbb" />
                 </button>
 
-                <button className="send-option-card" type="button" onClick={() => handleSelectOption('bank')}>
+                <button className="send-option-card" type="button" onClick={() => { setOption('bank'); setStep('form'); }}>
                   <span className="send-option-card__icon send-option-card__icon--bank">
                     <BankIcon size={20} color="#fff" />
                   </span>
@@ -194,13 +232,12 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
               <div>
                 <button className="send-drawer__back" onClick={() => setStep('select')} type="button">← Back</button>
                 <h2 className="send-drawer__title">Copay to Copay</h2>
-                <p className="send-drawer__subtitle">Send instantly to a Copay username</p>
+                <p className="send-drawer__subtitle">Sending from your {currencyCode} wallet</p>
               </div>
-              <button className="send-drawer__close" onClick={handleClose} type="button" aria-label="Close">
+              <button className="send-drawer__close" onClick={onClose} type="button" aria-label="Close">
                 <XIcon size={18} color="#555" />
               </button>
             </div>
-
             <div className="send-drawer__body">
               <div className="send-form">
                 <div className="send-field">
@@ -214,43 +251,30 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
                       onChange={(e) => { setUsername(e.target.value); setUsernameStatus('idle'); setResolvedName(''); }}
                       onBlur={handleUsernameBlur}
                     />
-                    {usernameStatus === 'checking' && (
-                      <span className="send-field__status send-field__status--spin">
-                        <SpinnerIcon size={16} color="#888" />
-                      </span>
-                    )}
-                    {usernameStatus === 'valid' && (
-                      <span className="send-field__status send-field__status--ok">✓</span>
-                    )}
-                    {usernameStatus === 'invalid' && (
-                      <span className="send-field__status send-field__status--err">✗</span>
-                    )}
+                    {usernameStatus === 'checking' && <span className="send-field__status send-field__status--spin"><SpinnerIcon size={16} color="#888" /></span>}
+                    {usernameStatus === 'valid'    && <span className="send-field__status send-field__status--ok">✓</span>}
+                    {usernameStatus === 'invalid'  && <span className="send-field__status send-field__status--err">✗</span>}
                   </div>
                   {usernameStatus === 'valid'   && <p className="send-field__hint send-field__hint--ok">✓ {resolvedName}</p>}
                   {usernameStatus === 'invalid' && <p className="send-field__hint send-field__hint--err">Username not found</p>}
                 </div>
 
                 <div className="send-field">
-                  <label className="send-field__label">Amount</label>
+                  <label className="send-field__label">Amount ({currencyCode})</label>
                   <div className="send-field__input-wrap">
-                    <span className="send-field__prefix">$</span>
+                    <span className="send-field__prefix">{currencySymbol}</span>
                     <input
                       className="send-field__input send-field__input--prefixed"
-                      type="number"
+                      type="text"
+                      inputMode="decimal"
                       placeholder="0.00"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      min="0"
+                      value={amountRaw}
+                      onChange={handleAmountChange}
                     />
                   </div>
                 </div>
 
-                <button
-                  className="send-btn-primary"
-                  type="button"
-                  disabled={!canProcessCopay}
-                  onClick={handleProcess}
-                >
+                <button className="send-btn-primary" type="button" disabled={!canProcessCopay} onClick={handleProcess}>
                   Process
                 </button>
               </div>
@@ -264,13 +288,12 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
               <div>
                 <button className="send-drawer__back" onClick={() => setStep('select')} type="button">← Back</button>
                 <h2 className="send-drawer__title">Copay to Other Bank</h2>
-                <p className="send-drawer__subtitle">Transfer to any Nigerian bank account</p>
+                <p className="send-drawer__subtitle">Sending from your {currencyCode} wallet</p>
               </div>
-              <button className="send-drawer__close" onClick={handleClose} type="button" aria-label="Close">
+              <button className="send-drawer__close" onClick={onClose} type="button" aria-label="Close">
                 <XIcon size={18} color="#555" />
               </button>
             </div>
-
             <div className="send-drawer__body">
               <div className="send-form">
                 <div className="send-field">
@@ -286,13 +309,9 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
                       onChange={(e) => { setAccountNumber(e.target.value.replace(/\D/g, '')); setAcctStatus('idle'); setResolvedAcct(''); }}
                       onBlur={handleAcctBlur}
                     />
-                    {acctStatus === 'checking' && (
-                      <span className="send-field__status send-field__status--spin">
-                        <SpinnerIcon size={16} color="#888" />
-                      </span>
-                    )}
-                    {acctStatus === 'valid'   && <span className="send-field__status send-field__status--ok">✓</span>}
-                    {acctStatus === 'invalid' && <span className="send-field__status send-field__status--err">✗</span>}
+                    {acctStatus === 'checking' && <span className="send-field__status send-field__status--spin"><SpinnerIcon size={16} color="#888" /></span>}
+                    {acctStatus === 'valid'    && <span className="send-field__status send-field__status--ok">✓</span>}
+                    {acctStatus === 'invalid'  && <span className="send-field__status send-field__status--err">✗</span>}
                   </div>
                   {acctStatus === 'valid'   && <p className="send-field__hint send-field__hint--ok">✓ {resolvedAcct}</p>}
                   {acctStatus === 'invalid' && <p className="send-field__hint send-field__hint--err">Account not found</p>}
@@ -311,26 +330,21 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
                 </div>
 
                 <div className="send-field">
-                  <label className="send-field__label">Amount</label>
+                  <label className="send-field__label">Amount ({currencyCode})</label>
                   <div className="send-field__input-wrap">
-                    <span className="send-field__prefix">₦</span>
+                    <span className="send-field__prefix">{currencySymbol}</span>
                     <input
                       className="send-field__input send-field__input--prefixed"
-                      type="number"
+                      type="text"
+                      inputMode="decimal"
                       placeholder="0.00"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      min="0"
+                      value={amountRaw}
+                      onChange={handleAmountChange}
                     />
                   </div>
                 </div>
 
-                <button
-                  className="send-btn-primary"
-                  type="button"
-                  disabled={!canProcessBank}
-                  onClick={handleProcess}
-                >
+                <button className="send-btn-primary" type="button" disabled={!canProcessBank} onClick={handleProcess}>
                   Process
                 </button>
               </div>
@@ -344,31 +358,22 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
               <div>
                 <button className="send-drawer__back" onClick={() => setStep('form')} type="button">← Back</button>
                 <h2 className="send-drawer__title">Enter Transfer PIN</h2>
-                <p className="send-drawer__subtitle">Enter your 4-digit transfer PIN to continue</p>
+                <p className="send-drawer__subtitle">Confirm your 4-digit transfer PIN</p>
               </div>
-              <button className="send-drawer__close" onClick={handleClose} type="button" aria-label="Close">
+              <button className="send-drawer__close" onClick={onClose} type="button" aria-label="Close">
                 <XIcon size={18} color="#555" />
               </button>
             </div>
-
             <div className="send-drawer__body">
               <div className="send-pin-section">
                 <div className="send-pin-summary">
                   <p className="send-pin-summary__label">Sending</p>
-                  <p className="send-pin-summary__amount">{option === 'bank' ? '₦' : '$'}{parseFloat(amount || '0').toLocaleString('en', { minimumFractionDigits: 2 })}</p>
-                  <p className="send-pin-summary__to">
-                    To: <strong>{option === 'copay' ? resolvedName || username : resolvedAcct || accountNumber}</strong>
-                  </p>
+                  <p className="send-pin-summary__amount">{amountDisplay}</p>
+                  <p className="send-pin-summary__to">To: <strong>{recipientDisplay}</strong></p>
+                  {bankDisplay && <p className="send-pin-summary__bank">{bankDisplay}</p>}
                 </div>
-
                 <PinInput value={pin} onChange={setPin} />
-
-                <button
-                  className="send-btn-primary"
-                  type="button"
-                  disabled={!canComplete}
-                  onClick={handleCompleteTransfer}
-                >
+                <button className="send-btn-primary" type="button" disabled={!canComplete} onClick={handleCompleteTransfer}>
                   Complete Transfer
                 </button>
               </div>
@@ -390,16 +395,40 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
             </div>
             <h2 className="send-success__title">Transfer Successful!</h2>
             <p className="send-success__msg">
-              You sent <strong>{option === 'bank' ? '₦' : '$'}{parseFloat(amount || '0').toLocaleString('en', { minimumFractionDigits: 2 })}</strong> to <strong>{option === 'copay' ? resolvedName || username : resolvedAcct || accountNumber}</strong>.
+              You sent <strong>{amountDisplay}</strong> to <strong>{recipientDisplay}</strong>.
             </p>
             <div className="send-success__meta">
               <div className="send-success__row">
-                <span>Reference</span>
-                <span>TXN{Date.now().toString().slice(-8)}</span>
+                <span>Recipient</span>
+                <span>{recipientDisplay}</span>
+              </div>
+              {bankDisplay && (
+                <div className="send-success__row">
+                  <span>Bank</span>
+                  <span>{bankDisplay}</span>
+                </div>
+              )}
+              {option === 'bank' && (
+                <div className="send-success__row">
+                  <span>Account No.</span>
+                  <span>{accountNumber}</span>
+                </div>
+              )}
+              <div className="send-success__row">
+                <span>Amount</span>
+                <span>{amountDisplay}</span>
               </div>
               <div className="send-success__row">
-                <span>Date</span>
-                <span>{new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                <span>Currency</span>
+                <span>{currencyCode}</span>
+              </div>
+              <div className="send-success__row">
+                <span>Reference</span>
+                <span>{txnRef}</span>
+              </div>
+              <div className="send-success__row">
+                <span>Date & Time</span>
+                <span>{txnDate}</span>
               </div>
               <div className="send-success__row">
                 <span>Status</span>

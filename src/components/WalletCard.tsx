@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
+import { useWallet, wallets } from '../contexts/WalletContext';
 import type { Wallet } from '../types';
 import {
   WalletIcon,
@@ -8,13 +9,7 @@ import {
   PlusIcon,
   ChevronRightIcon,
 } from './Icons';
-
-const wallets: Wallet[] = [
-  { currency: 'USD', balance: 2450.0,    isPrimary: true,  flag: '🇺🇸', symbol: '$', formatted: '$2,450.00'      },
-  { currency: 'NGN', balance: 1280500.0, isPrimary: false, flag: '🇳🇬', symbol: '₦', formatted: '₦1,280,500.00' },
-  { currency: 'GBP', balance: 320.0,     isPrimary: false, flag: '🇬🇧', symbol: '£', formatted: '£320.00'        },
-  { currency: 'EUR', balance: 410.0,     isPrimary: false, flag: '🇪🇺', symbol: '€', formatted: '€410.00'        },
-];
+import { useState } from 'react';
 
 const flagMap: Record<string, string> = {
   USD: '🇺🇸',
@@ -24,10 +19,10 @@ const flagMap: Record<string, string> = {
 };
 
 export default function WalletCard() {
-  const [activeWallet, setActiveWallet] = useState<Wallet>(wallets[0]);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { activeWallet, setActiveWallet } = useWallet();
+  const [dropdownOpen, setDropdownOpen]   = useState(false);
   const currencyBtnRef = useRef<HTMLDivElement>(null);
-  const wrapperRef = useRef<HTMLDivElement>(null);
+  const wrapperRef     = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
