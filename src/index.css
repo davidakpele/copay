@@ -3104,3 +3104,262 @@ ul, ol { list-style: none; }
 .mobile-greeting {
   padding: var(--space-4) var(--space-4) 0;
 }
+
+
+/* ============================================================
+   Side nav: white background, black text (per request)
+   ============================================================ */
+.side-nav {
+  background: #ffffff;
+  border-right: 1px solid var(--color-border);
+}
+
+.side-nav__logo {
+  border-bottom-color: var(--color-border);
+}
+
+.side-nav__logo-text {
+  color: var(--color-ink);
+}
+
+.side-nav__section-label {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.side-nav__menu {
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+.side-nav__menu::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+}
+.side-nav__menu::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.side-nav__item:hover { background: rgba(0, 0, 0, 0.04); }
+.side-nav__item--active { background: rgba(0, 0, 0, 0.06); }
+
+.side-nav__item-icon { color: #6b6b6b; }
+.side-nav__item--active .side-nav__item-icon { color: var(--color-ink); }
+.side-nav__item:hover .side-nav__item-icon { color: #2a2a2a; }
+
+.side-nav__item-label { color: #2a2a2a; }
+.side-nav__item--active .side-nav__item-label { color: var(--color-ink); font-weight: 600; }
+.side-nav__item:hover .side-nav__item-label { color: var(--color-ink); }
+.side-nav__item--logout .side-nav__item-label { color: #e5403a; }
+
+.side-nav__item-arrow { opacity: 0.6; }
+
+.side-nav__submenu { border-left-color: rgba(0, 0, 0, 0.1); }
+.side-nav__subitem { color: rgba(0, 0, 0, 0.55); }
+.side-nav__subitem:hover {
+  color: var(--color-ink);
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.side-nav__mobile-close:hover { background: rgba(0, 0, 0, 0.06); }
+
+
+/* ============================================================
+   Mobile inline nav: shown after the header, before the wallet card.
+   Mobile-only (lives inside .mobile-shell, which is hidden on desktop).
+   White background, black text to match the restyled sidebar.
+   ============================================================ */
+.mobile-inline-nav {
+  background: #ffffff;
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-2);
+}
+
+.mobile-inline-nav__scroll {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.mobile-inline-nav__scroll::-webkit-scrollbar { display: none; }
+
+.mobile-inline-nav__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-2);
+  color: var(--color-ink-secondary);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: var(--ls-base);
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background var(--ease), color var(--ease);
+}
+
+.mobile-inline-nav__item--active {
+  background: var(--color-border);
+  color: var(--color-ink);
+  font-weight: 700;
+}
+
+.mobile-inline-nav__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* ============================================================
+   Page loader: transparent white overlay, smooth black spinner.
+   Visible for ~3s on every page load, then fades out.
+   ============================================================ */
+.page-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  opacity: 1;
+  transition: opacity 450ms ease;
+}
+
+.page-loader--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.page-loader__spinner {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 4px solid rgba(0, 0, 0, 0.12);
+  border-top-color: #000;
+  animation: page-loader-spin 0.8s linear infinite;
+}
+
+@keyframes page-loader-spin {
+  to { transform: rotate(360deg); }
+}
+
+
+/* ============================================================
+   Deposit drawer: copy-detail cards + 30-min countdown.
+   Reuses the .send-drawer shell/header/body/option/form/btn/
+   loading/success classes so it matches the Send Money drawer.
+   ============================================================ */
+.deposit-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.deposit-detail-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+}
+
+.deposit-detail-card__main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.deposit-detail-card__label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-ink-tertiary);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+}
+
+.deposit-detail-card__value {
+  font-size: var(--text-md);
+  font-weight: 700;
+  color: var(--color-ink);
+  letter-spacing: var(--ls-base);
+  word-break: break-all;
+}
+
+.deposit-detail-card__copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-ink-secondary);
+  flex-shrink: 0;
+  transition: background var(--ease), color var(--ease), border-color var(--ease);
+}
+
+.deposit-detail-card__copy:hover {
+  background: var(--color-border);
+  color: var(--color-ink);
+}
+
+.deposit-detail-card__copy--copied {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #15803d;
+}
+
+.deposit-info {
+  font-size: var(--text-sm);
+  color: var(--color-ink-secondary);
+  line-height: var(--lh-relaxed);
+  margin-top: var(--space-2);
+}
+
+.deposit-countdown {
+  margin-top: var(--space-5);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.deposit-countdown__label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-ink-tertiary);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+}
+
+.deposit-countdown__time {
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  color: var(--color-ink);
+  letter-spacing: -0.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.deposit-countdown--expired .deposit-countdown__time {
+  color: #e5403a;
+}
+
+.deposit-countdown__refresh {
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-ink);
+  text-decoration: underline;
+}

@@ -18,18 +18,20 @@ const tabs: NavTab[] = [
 interface BottomNavProps {
   active: NavItem;
   onChange: (tab: NavItem) => void;
+  onMoreClick: () => void;
 }
 
-export default function BottomNav({ active, onChange }: BottomNavProps) {
+export default function BottomNav({ active, onChange, onMoreClick }: BottomNavProps) {
   return (
     <nav className="bottom-nav" aria-label="Primary navigation">
       {tabs.map((tab) => {
         const isActive = tab.id === active;
+        const isMore = tab.label === 'More';
         return (
           <button
             key={tab.id}
             className={`bottom-nav__tab${isActive ? ' bottom-nav__tab--active' : ''}`}
-            onClick={() => onChange(tab.id)}
+            onClick={() => (isMore ? onMoreClick() : onChange(tab.id))}
             type="button"
             aria-current={isActive ? 'page' : undefined}
           >
