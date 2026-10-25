@@ -8,6 +8,7 @@ import {
   GlobeIcon,
 } from './Icons';
 import SendMoneyDrawer from './SendMoneyDrawer';
+import DepositDrawer from './DepositDrawer';
 
 const walletOverview = [
   { currency: 'USD', flag: '🇺🇸', amount: '$2,450.00' },
@@ -18,10 +19,11 @@ const walletOverview = [
 
 export default function RightPanel() {
   const [sendOpen, setSendOpen] = useState(false);
+  const [depositOpen, setDepositOpen] = useState(false);
 
   const quickActions = [
     { label: 'Send Money', icon: <SendIcon      size={20} color="#fff" />, onClick: () => setSendOpen(true) },
-    { label: 'Deposit',    icon: <ReceiveIcon   size={20} color="#fff" />, onClick: undefined               },
+    { label: 'Deposit',    icon: <ReceiveIcon   size={20} color="#fff" />, onClick: () => setDepositOpen(true) },
     { label: 'Buy Airtime',icon: <AirtimeIcon   size={20} color="#fff" />, onClick: undefined               },
     { label: 'Pay Bills',  icon: <LightningIcon size={20} color="#fff" />, onClick: undefined               },
   ];
@@ -29,6 +31,7 @@ export default function RightPanel() {
   return (
     <>
       <SendMoneyDrawer open={sendOpen} onClose={() => setSendOpen(false)} />
+      <DepositDrawer   open={depositOpen} onClose={() => setDepositOpen(false)} />
 
       <aside className="right-panel">
         <section className="rp-section">
