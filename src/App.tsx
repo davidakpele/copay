@@ -1,6 +1,6 @@
 import './App.css';
-import HomePage from './pages/HomePage';
+import AppRoutes from './routes';
 
 export default function App() {
-  return <HomePage />;
+  return <AppRoutes />;
 }

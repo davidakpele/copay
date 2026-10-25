@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router';
 import { SearchIcon, BellIcon, ChevronDownIcon, VerifiedIcon, UserIcon, SettingsIcon, LogoutIcon } from './Icons';
 
 interface DesktopTopBarProps {
@@ -7,6 +8,7 @@ interface DesktopTopBarProps {
 }
 
 export default function DesktopTopBar({ notifCount, onBellClick }: DesktopTopBarProps) {
+  const navigate = useNavigate();
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
 
@@ -19,6 +21,11 @@ export default function DesktopTopBar({ notifCount, onBellClick }: DesktopTopBar
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  function go(path: string) {
+    setProfileOpen(false);
+    navigate(path);
+  }
 
   return (
     <div className="desktop-topbar">
@@ -74,16 +81,31 @@ export default function DesktopTopBar({ notifCount, onBellClick }: DesktopTopBar
 
           {profileOpen && (
             <div className="profile-dropdown" role="menu">
-              <button className="profile-dropdown__item" role="menuitem" type="button" onClick={() => setProfileOpen(false)}>
+              <button
+                className="profile-dropdown__item"
+                role="menuitem"
+                type="button"
+                onClick={() => go('/profile')}
+              >
                 <UserIcon size={16} color="#555" />
                 <span>Profile</span>
               </button>
-              <button className="profile-dropdown__item" role="menuitem" type="button" onClick={() => setProfileOpen(false)}>
+              <button
+                className="profile-dropdown__item"
+                role="menuitem"
+                type="button"
+                onClick={() => go('/settings')}
+              >
                 <SettingsIcon size={16} color="#555" />
                 <span>Settings</span>
               </button>
               <div className="profile-dropdown__divider" />
-              <button className="profile-dropdown__item profile-dropdown__item--danger" role="menuitem" type="button" onClick={() => setProfileOpen(false)}>
+              <button
+                className="profile-dropdown__item profile-dropdown__item--danger"
+                role="menuitem"
+                type="button"
+                onClick={() => go('/')}
+              >
                 <LogoutIcon size={16} color="#e5403a" />
                 <span>Logout</span>
               </button>
