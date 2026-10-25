@@ -139,7 +139,7 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
         setResolvedName('');
       } else {
         setUsernameStatus('valid');
-        setResolvedName('Ada Okafor');
+        setResolvedName(username.startsWith('@') ? username : `@${username}`);
       }
     }, 1500);
   }
@@ -390,6 +390,7 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
 
         {step === 'success' && (
           <div className="send-drawer__success">
+            <div className="send-success__inner">
             <div className="send-success__icon">
               <CheckCircleIcon size={64} color="#16a34a" />
             </div>
@@ -436,6 +437,7 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
               </div>
             </div>
             <button className="send-btn-primary" type="button" onClick={handleDone}>Done</button>
+          </div>
           </div>
         )}
 
