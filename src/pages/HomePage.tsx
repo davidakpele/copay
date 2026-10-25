@@ -8,7 +8,7 @@ import RightPanel from '../components/RightPanel';
 export default function HomePage() {
   return (
     <AppShell
-      title="Good morning, Ada"
+      title="Welcome, David"
       subtitle="Here's what's happening with your money today."
       rightPanel={<RightPanel />}
     >

@@ -66,8 +66,7 @@ export default function AppShell({ children, title, subtitle, rightPanel }: AppS
           />
           <div className="mobile-greeting">
             <div className="app-header__greeting">
-              <span className="app-header__good-morning">Good morning,</span>
-              <span className="app-header__name">Ada</span>
+              <span className="app-header__good-morning">Good morning, David</span>
             </div>
           </div>
           <main className="app-main">{children}</main>
