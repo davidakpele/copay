@@ -36,11 +36,6 @@ export default function Header({ notifCount, onBellClick, onMenuClick }: HeaderP
             </svg>
           </div>
         </button>
-
-        <div className="app-header__greeting">
-          <span className="app-header__good-morning">Good morning,</span>
-          <span className="app-header__name">Ada</span>
-        </div>
       </div>
 
       <div className="app-header__actions">

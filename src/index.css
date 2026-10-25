@@ -2971,3 +2971,136 @@ ul, ol { list-style: none; }
   color: var(--color-ink-tertiary);
   margin-top: 3px;
 }
+
+
+/* ============================================================
+   Sidebar theme: white background, dark text. All rules
+   scoped to override the dark defaults above.
+   ============================================================ */
+.side-nav {
+  background: #ffffff;
+  border-right: 1px solid var(--color-border);
+}
+
+.side-nav .side-nav__logo {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.side-nav .side-nav__logo-mark svg rect {
+  fill: var(--color-ink);
+  fill-opacity: 0.08;
+}
+
+.side-nav .side-nav__logo-mark svg path {
+  stroke: var(--color-ink);
+}
+
+.side-nav .side-nav__logo-text {
+  color: var(--color-ink);
+}
+
+.side-nav .side-nav__mobile-close svg path {
+  stroke: var(--color-ink-tertiary);
+}
+
+.side-nav .side-nav__menu {
+  scrollbar-color: rgba(0,0,0,0.15) transparent;
+}
+
+.side-nav .side-nav__menu::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.15);
+}
+
+.side-nav .side-nav__section-label {
+  color: var(--color-ink-tertiary);
+}
+
+.side-nav .side-nav__item:hover {
+  background: var(--color-surface-2);
+}
+
+.side-nav .side-nav__item--active {
+  background: var(--color-ink);
+}
+
+.side-nav .side-nav__item--logout:hover {
+  background: rgba(229,64,58,0.08);
+}
+
+.side-nav .side-nav__item-icon {
+  color: var(--color-ink-secondary);
+}
+
+.side-nav .side-nav__item--active .side-nav__item-icon {
+  color: #fff;
+}
+
+.side-nav .side-nav__item:hover .side-nav__item-icon {
+  color: var(--color-ink);
+}
+
+.side-nav .side-nav__item-label {
+  color: var(--color-ink-secondary);
+}
+
+.side-nav .side-nav__item--active .side-nav__item-label {
+  color: #fff;
+  font-weight: 600;
+}
+
+.side-nav .side-nav__item:hover .side-nav__item-label {
+  color: var(--color-ink);
+}
+
+.side-nav .side-nav__item--logout .side-nav__item-label {
+  color: #e5403a;
+}
+
+.side-nav .side-nav__item-arrow svg path {
+  stroke: var(--color-ink-tertiary);
+}
+
+.side-nav .side-nav__item--active .side-nav__item-arrow svg path {
+  stroke: #fff;
+}
+
+.side-nav .side-nav__submenu {
+  border-left: 1.5px solid var(--color-border);
+}
+
+.side-nav .side-nav__subitem {
+  color: var(--color-ink-tertiary);
+}
+
+.side-nav .side-nav__subitem:hover {
+  color: var(--color-ink);
+  background: var(--color-surface-2);
+}
+
+.side-nav .side-nav__promo {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+}
+
+.side-nav .side-nav__promo-title {
+  color: var(--color-ink);
+}
+
+.side-nav .side-nav__promo-sub {
+  color: var(--color-ink-secondary);
+}
+
+.side-nav .side-nav__promo-btn {
+  background: var(--color-ink);
+  color: #fff;
+}
+
+.side-nav .side-nav__promo-btn:hover {
+  background: #2a2a2a;
+}
+
+/* Mobile greeting: shown after the header, before the wallet card.
+   Lives inside .mobile-shell so it is mobile-only automatically. */
+.mobile-greeting {
+  padding: var(--space-4) var(--space-4) 0;
+}

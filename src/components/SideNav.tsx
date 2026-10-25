@@ -149,8 +149,8 @@ export default function SideNav({ active, onChange, mobileOpen, onMobileClose }:
         <div className="side-nav__logo">
           <span className="side-nav__logo-mark" aria-hidden="true">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <rect width="24" height="24" rx="6" fill="#fff" fillOpacity="0.15" />
-              <path d="M6 8h12M6 12h8M6 16h10" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+              <rect width="24" height="24" rx="6" fill="#0d0d0d" fillOpacity="0.08" />
+              <path d="M6 8h12M6 12h8M6 16h10" stroke="#0d0d0d" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </span>
           <span className="side-nav__logo-text">Copay</span>
