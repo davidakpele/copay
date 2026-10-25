@@ -296,19 +296,26 @@ export default function TransactionsPage() {
   const [hasSearched, setHasSearched] = useState(true);
   const walletRef = useRef<HTMLDivElement>(null);
   const periodRef = useRef<HTMLDivElement>(null);
-  const filterRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    function handler(e: MouseEvent) {
-      if (walletRef.current && !walletRef.current.contains(e.target as Node)) setWalletOpen(false);
-      if (periodRef.current && !periodRef.current.contains(e.target as Node)) {
-        setPeriodOpen(false);
-        setFilterOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
+    if (!walletOpen && !periodOpen) return;
+    let handler: ((e: Event) => void) | null = null;
+    const timer = setTimeout(() => {
+      handler = (e: Event) => {
+        if (walletOpen && walletRef.current && !walletRef.current.contains(e.target as Node)) {
+          setWalletOpen(false);
+        }
+        if (periodOpen && periodRef.current && !periodRef.current.contains(e.target as Node)) {
+          setPeriodOpen(false);
+        }
+      };
+      document.addEventListener('click', handler);
+    }, 100);
+    return () => {
+      clearTimeout(timer);
+      if (handler) document.removeEventListener('click', handler);
+    };
+  }, [walletOpen, periodOpen]);
 
   const applyFilters = useCallback((f: FilterState) => {
     setFilters(f);
@@ -345,6 +352,16 @@ export default function TransactionsPage() {
     <AppShell title="Transaction History" subtitle="Review and filter your account activity.">
       {detailTxn && (
         <DetailDrawer txn={detailTxn} onClose={() => setDetailTxn(null)} />
+      )}
+      {filterOpen && (
+        <>
+          <div className="drawer-overlay" onClick={() => setFilterOpen(false)} aria-hidden="true" />
+          <FilterSheet
+            filters={filters}
+            onApply={applyFilters}
+            onClose={() => setFilterOpen(false)}
+          />
+        </>
       )}
 
       <div className="hist-page">
@@ -432,16 +449,7 @@ export default function TransactionsPage() {
                 ))}
               </ul>
             )}
-            {/* Filter modal — shown only when Custom is selected */}
-            {filterOpen && (
-              <div ref={filterRef}>
-                <FilterSheet
-                  filters={filters}
-                  onApply={applyFilters}
-                  onClose={() => setFilterOpen(false)}
-                />
-              </div>
-            )}
+            {/* Filter modal opens at top level */}
           </div>
         </div>
 
