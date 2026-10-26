@@ -5,15 +5,13 @@ import AppShell from '../components/AppShell';
 type Tab = 'profile' | 'security' | 'notifications' | 'preferences' | 'pin';
 
 /* ─── Inline icons ───────────────────────────────────────────────── */
-function UserSvg()   { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.8"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>; }
-function ShieldSvg() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l7 4v5c0 5-3.5 9-7 10C8.5 20 5 16 5 11V6l7-4z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/></svg>; }
-function BellSvg()   { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><path d="M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>; }
-function GlobeSvg()  { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.8"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20" stroke="currentColor" strokeWidth="1.8"/></svg>; }
-function KeySvg()    { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="8" cy="15" r="4" stroke="currentColor" strokeWidth="1.8"/><path d="M11.8 11.2L21 2M19 4l2 2M15 8l2 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>; }
-function CameraSvg() { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/><circle cx="12" cy="13" r="4" stroke="currentColor" strokeWidth="1.8"/></svg>; }
-function TrashSvg()  { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><polyline points="3 6 5 6 21 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/><path d="M10 11v6M14 11v6M9 6V4h6v2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>; }
+function UserSvg()   { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.8"/><path d="M4 20c0-4 3.5-7 8-7s8 3 8 7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>; }
+function ShieldSvg() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l7 4v5c0 5-3.5 9-7 10C8.5 20 5 16 5 11V6l7-4z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>; }
+function BellSvg()   { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><path d="M10 20a2 2 0 004 0" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>; }
+function GlobeSvg()  { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.8"/><path d="M2 12h20M12 2a15.5 15.5 0 010 20M12 2a15.5 15.5 0 000 20" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg>; }
+function KeySvg()    { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="8" cy="15" r="4" stroke="currentColor" strokeWidth="1.8"/><path d="M11.8 11.2L21 2l-1 5 5 1-3.5 3.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>; }
+function CameraSvg() { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="13" r="4" stroke="currentColor" strokeWidth="1.8"/></svg>; }
 function LockSvg()   { return <svg width="44" height="44" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" strokeWidth="1.8"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>; }
-function WarnSvg()   { return <svg width="44" height="44" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.8"/><path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>; }
 
 /* ─── Shared primitives ─────────────────────────────────────────── */
 function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void }) {
@@ -65,25 +63,6 @@ function Section({ title, subtitle, children }: { title: string; subtitle?: stri
         {subtitle && <p className="st-section__sub">{subtitle}</p>}
       </div>
       {children}
-    </div>
-  );
-}
-
-/* ─── Modal ─────────────────────────────────────────────────────── */
-function Modal({ icon, iconCls, title, body, actions, onClose }: {
-  icon: React.ReactNode; iconCls: string; title: string; body: string;
-  actions: React.ReactNode; onClose: () => void;
-}) {
-  return (
-    <div className="st-modal-overlay" onClick={onClose}>
-      <div className="st-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="st-modal__content">
-          <div className={`st-modal__icon ${iconCls}`}>{icon}</div>
-          <h3 className="st-modal__title">{title}</h3>
-          <p className="st-modal__body">{body}</p>
-          <div className="st-modal__actions">{actions}</div>
-        </div>
-      </div>
     </div>
   );
 }
@@ -353,7 +332,6 @@ function NotificationsTab() {
 
 /* ─── Preferences tab ────────────────────────────────────────────── */
 function PreferencesTab() {
-  const [theme,    setTheme]    = useState<'light' | 'dark' | 'system'>('light');
   const [language, setLanguage] = useState('English');
   const [currency, setCurrency] = useState('USD');
 
@@ -439,7 +417,6 @@ function PinTab() {
           )}
         </div>
 
-        {/* Create PIN form */}
         {showCreate && (
           <div className="st-pin-form-wrap">
             <p className="st-pin-form-title">Create your PIN</p>
@@ -454,7 +431,6 @@ function PinTab() {
           </div>
         )}
 
-        {/* Change PIN form */}
         {showChange && (
           <div className="st-pin-form-wrap">
             <p className="st-pin-form-title">Change your PIN</p>
@@ -470,7 +446,6 @@ function PinTab() {
           </div>
         )}
 
-        {/* Danger zone */}
         <div className="st-danger-zone">
           <h3>Danger Zone</h3>
           <div className="st-danger-actions">
