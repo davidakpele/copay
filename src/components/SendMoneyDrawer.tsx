@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useWallet } from '../contexts/WalletContext';
+import { useNavigate } from 'react-router';
 import { XIcon, CopayIcon, BankIcon, CheckCircleIcon, SpinnerIcon, ChevronRightIcon } from './Icons';
+import { depositBankAccounts } from '../pages/DepositBankPage';
 
 type SendOption = 'copay' | 'bank';
-type Step = 'select' | 'form' | 'pin' | 'loading' | 'success';
+type Step = 'select' | 'bank-pick' | 'form' | 'pin' | 'loading' | 'success';
 
 const DEMO_BANKS = [
   'Access Bank', 'First Bank', 'GTBank', 'Zenith Bank', 'UBA',
@@ -84,6 +86,7 @@ interface SendMoneyDrawerProps {
 
 export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps) {
   const { activeWallet }  = useWallet();
+  const navigate          = useNavigate();
   const currencySymbol    = activeWallet.symbol;
   const currencyCode      = activeWallet.currency;
 
@@ -99,6 +102,9 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
   const [amountRaw, setAmountRaw]             = useState('');
   const [pin, setPin]                         = useState('');
   const [txnRef]                              = useState(() => `TXN${Date.now().toString().slice(-8)}`);
+  const [savedBanks, setSavedBanks]           = useState(depositBankAccounts);
+  const [banksLoading, setBanksLoading]       = useState(false);
+  const [fromSavedBank, setFromSavedBank]     = useState(false);
 
   const usernameTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const acctTimer     = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -115,10 +121,12 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
     setResolvedAcct('');
     setAmountRaw('');
     setPin('');
+    setFromSavedBank(false);
   }, []);
 
   useEffect(() => {
     if (!open) { setTimeout(reset, 300); }
+    if (open)  { setSavedBanks([...depositBankAccounts]); }
   }, [open, reset]);
 
   function handleAmountChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -153,6 +161,29 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
     }, 1500);
   }
 
+  function pickSavedBank(bank: typeof depositBankAccounts[number]) {
+    setAccountNumber(bank.accountNumber);
+    setSelectedBank(bank.bankName);
+    setResolvedAcct(bank.accountName);
+    setAcctStatus('valid');
+    setFromSavedBank(true);
+    setStep('form');
+  }
+
+  function enterBankPick() {
+    setOption('bank');
+    setStep('bank-pick');
+    setBanksLoading(true);
+    setTimeout(() => {
+      setSavedBanks([...depositBankAccounts]);
+      setBanksLoading(false);
+    }, 3000);
+  }
+
+  function goToDepositBanks() {
+    onClose();
+    navigate('/deposit-banks');
+  }
   function handleProcess() { setStep('pin'); }
 
   function handleCompleteTransfer() {
@@ -174,7 +205,7 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
       ? `${resolvedAcct} · ${accountNumber}`
       : accountNumber;
 
-  const bankDisplay = option === 'bank' && selectedBank ? selectedBank : '';
+  const bankDisplay   = option === 'bank' && selectedBank ? selectedBank : '';
   const amountDisplay = formatFinal(currencySymbol, amountRaw);
 
   const txnDate = new Date().toLocaleDateString('en-GB', {
@@ -187,6 +218,7 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
 
       <aside className={`send-drawer${open ? ' send-drawer--open' : ''}`} aria-label="Send Money" aria-hidden={!open}>
 
+        {/* ── Step 1: choose method ── */}
         {step === 'select' && (
           <>
             <div className="send-drawer__header">
@@ -211,7 +243,7 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
                   <ChevronRightIcon size={18} color="#bbb" />
                 </button>
 
-                <button className="send-option-card" type="button" onClick={() => { setOption('bank'); setStep('form'); }}>
+                <button className="send-option-card" type="button" onClick={enterBankPick}>
                   <span className="send-option-card__icon send-option-card__icon--bank">
                     <BankIcon size={20} color="#fff" />
                   </span>
@@ -226,6 +258,68 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
           </>
         )}
 
+        {/* ── Step 2 (bank): pick saved deposit account ── */}
+        {step === 'bank-pick' && (
+          <>
+            <div className="send-drawer__header">
+              <div>
+                <button className="send-drawer__back" onClick={() => setStep('select')} type="button">← Back</button>
+                <h2 className="send-drawer__title">Copay to Other Bank</h2>
+                <p className="send-drawer__subtitle">Select a saved account or use a different one</p>
+              </div>
+              <button className="send-drawer__close" onClick={onClose} type="button" aria-label="Close">
+                <XIcon size={18} color="#555" />
+              </button>
+            </div>
+            <div className="send-drawer__body">
+              {banksLoading ? (
+                <div className="send-bank-pick__spinner-wrap">
+                  <span className="send-bank-pick__spinner" aria-label="Loading accounts" />
+                  <p className="send-bank-pick__spinner-text">Fetching your accounts…</p>
+                </div>
+              ) : savedBanks.length > 0 ? (
+                <>
+                  <p className="send-bank-pick__label">Your deposit accounts</p>
+                  <div className="send-bank-pick__list">
+                    {savedBanks.map((bank) => (
+                      <button
+                        key={bank.id}
+                        className="send-bank-pick__item"
+                        type="button"
+                        onClick={() => pickSavedBank(bank)}
+                        onTouchEnd={(e) => { e.preventDefault(); pickSavedBank(bank); }}
+                      >
+                        <span className="send-bank-pick__icon">
+                          <BankIcon size={18} color="#fff" />
+                        </span>
+                        <div className="send-bank-pick__info">
+                          <span className="send-bank-pick__name">{bank.accountName}</span>
+                          <span className="send-bank-pick__meta">{bank.bankName} · {bank.accountNumber}</span>
+                        </div>
+                        <ChevronRightIcon size={16} color="#bbb" />
+                      </button>
+                    ))}
+                  </div>
+                  <div className="send-bank-pick__divider"><span>or</span></div>
+                </>
+              ) : (
+                <p className="send-bank-pick__empty">No saved deposit accounts found.</p>
+              )}
+              {!banksLoading && (
+                <button
+                  className="send-bank-pick__new-btn"
+                  type="button"
+                  onClick={goToDepositBanks}
+                  onTouchEnd={(e) => { e.preventDefault(); goToDepositBanks(); }}
+                >
+                  + Use a different account
+                </button>
+              )}
+            </div>
+          </>
+        )}
+
+        {/* ── Step 3 copay: form ── */}
         {step === 'form' && option === 'copay' && (
           <>
             <div className="send-drawer__header">
@@ -282,11 +376,12 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
           </>
         )}
 
+        {/* ── Step 3 bank: form ── */}
         {step === 'form' && option === 'bank' && (
           <>
             <div className="send-drawer__header">
               <div>
-                <button className="send-drawer__back" onClick={() => setStep('select')} type="button">← Back</button>
+                <button className="send-drawer__back" onClick={() => setStep('bank-pick')} type="button">← Back</button>
                 <h2 className="send-drawer__title">Copay to Other Bank</h2>
                 <p className="send-drawer__subtitle">Sending from your {currencyCode} wallet</p>
               </div>
@@ -298,35 +393,48 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
               <div className="send-form">
                 <div className="send-field">
                   <label className="send-field__label">Account Number</label>
-                  <div className={`send-field__input-wrap${acctStatus === 'valid' ? ' send-field__input-wrap--valid' : acctStatus === 'invalid' ? ' send-field__input-wrap--invalid' : ''}`}>
-                    <input
-                      className="send-field__input"
-                      type="text"
-                      inputMode="numeric"
-                      placeholder="10-digit account number"
-                      maxLength={10}
-                      value={accountNumber}
-                      onChange={(e) => { setAccountNumber(e.target.value.replace(/\D/g, '')); setAcctStatus('idle'); setResolvedAcct(''); }}
-                      onBlur={handleAcctBlur}
-                    />
-                    {acctStatus === 'checking' && <span className="send-field__status send-field__status--spin"><SpinnerIcon size={16} color="#888" /></span>}
-                    {acctStatus === 'valid'    && <span className="send-field__status send-field__status--ok">✓</span>}
-                    {acctStatus === 'invalid'  && <span className="send-field__status send-field__status--err">✗</span>}
-                  </div>
-                  {acctStatus === 'valid'   && <p className="send-field__hint send-field__hint--ok">✓ {resolvedAcct}</p>}
-                  {acctStatus === 'invalid' && <p className="send-field__hint send-field__hint--err">Account not found</p>}
+                  {fromSavedBank ? (
+                    <div className="send-field__readonly">
+                      <span>{accountNumber}</span>
+                      {resolvedAcct && <span className="send-field__readonly-resolved">✓ {resolvedAcct}</span>}
+                    </div>
+                  ) : (
+                    <div className={`send-field__input-wrap${acctStatus === 'valid' ? ' send-field__input-wrap--valid' : acctStatus === 'invalid' ? ' send-field__input-wrap--invalid' : ''}`}>
+                      <input
+                        className="send-field__input"
+                        type="text"
+                        inputMode="numeric"
+                        placeholder="10-digit account number"
+                        maxLength={10}
+                        value={accountNumber}
+                        onChange={(e) => { setAccountNumber(e.target.value.replace(/\D/g, '')); setAcctStatus('idle'); setResolvedAcct(''); }}
+                        onBlur={handleAcctBlur}
+                      />
+                      {acctStatus === 'checking' && <span className="send-field__status send-field__status--spin"><SpinnerIcon size={16} color="#888" /></span>}
+                      {acctStatus === 'valid'    && <span className="send-field__status send-field__status--ok">✓</span>}
+                      {acctStatus === 'invalid'  && <span className="send-field__status send-field__status--err">✗</span>}
+                    </div>
+                  )}
+                  {!fromSavedBank && acctStatus === 'valid'   && <p className="send-field__hint send-field__hint--ok">✓ {resolvedAcct}</p>}
+                  {!fromSavedBank && acctStatus === 'invalid' && <p className="send-field__hint send-field__hint--err">Account not found</p>}
                 </div>
 
                 <div className="send-field">
                   <label className="send-field__label">Choose Bank</label>
-                  <select
-                    className="send-field__select"
-                    value={selectedBank}
-                    onChange={(e) => { setSelectedBank(e.target.value); setAcctStatus('idle'); setResolvedAcct(''); }}
-                  >
-                    <option value="">Select a bank</option>
-                    {DEMO_BANKS.map((b) => <option key={b} value={b}>{b}</option>)}
-                  </select>
+                  {fromSavedBank ? (
+                    <div className="send-field__readonly">
+                      <span>{selectedBank}</span>
+                    </div>
+                  ) : (
+                    <select
+                      className="send-field__select"
+                      value={selectedBank}
+                      onChange={(e) => { setSelectedBank(e.target.value); setAcctStatus('idle'); setResolvedAcct(''); }}
+                    >
+                      <option value="">Select a bank</option>
+                      {DEMO_BANKS.map((b) => <option key={b} value={b}>{b}</option>)}
+                    </select>
+                  )}
                 </div>
 
                 <div className="send-field">
@@ -352,6 +460,7 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
           </>
         )}
 
+        {/* ── PIN ── */}
         {step === 'pin' && (
           <>
             <div className="send-drawer__header">
@@ -381,6 +490,7 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
           </>
         )}
 
+        {/* ── Loading ── */}
         {step === 'loading' && (
           <div className="send-drawer__loading">
             <span className="send-ring-loader" aria-hidden="true" />
@@ -388,56 +498,29 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
           </div>
         )}
 
+        {/* ── Success ── */}
         {step === 'success' && (
           <div className="send-drawer__success">
             <div className="send-success__inner">
-            <div className="send-success__icon">
-              <CheckCircleIcon size={64} color="#16a34a" />
+              <div className="send-success__icon">
+                <CheckCircleIcon size={64} color="#16a34a" />
+              </div>
+              <h2 className="send-success__title">Transfer Successful!</h2>
+              <p className="send-success__msg">
+                You sent <strong>{amountDisplay}</strong> to <strong>{recipientDisplay}</strong>.
+              </p>
+              <div className="send-success__meta">
+                <div className="send-success__row"><span>Recipient</span><span>{recipientDisplay}</span></div>
+                {bankDisplay && <div className="send-success__row"><span>Bank</span><span>{bankDisplay}</span></div>}
+                {option === 'bank' && <div className="send-success__row"><span>Account No.</span><span>{accountNumber}</span></div>}
+                <div className="send-success__row"><span>Amount</span><span>{amountDisplay}</span></div>
+                <div className="send-success__row"><span>Currency</span><span>{currencyCode}</span></div>
+                <div className="send-success__row"><span>Reference</span><span>{txnRef}</span></div>
+                <div className="send-success__row"><span>Date & Time</span><span>{txnDate}</span></div>
+                <div className="send-success__row"><span>Status</span><span className="send-success__status">Completed</span></div>
+              </div>
+              <button className="send-btn-primary" type="button" onClick={handleDone}>Done</button>
             </div>
-            <h2 className="send-success__title">Transfer Successful!</h2>
-            <p className="send-success__msg">
-              You sent <strong>{amountDisplay}</strong> to <strong>{recipientDisplay}</strong>.
-            </p>
-            <div className="send-success__meta">
-              <div className="send-success__row">
-                <span>Recipient</span>
-                <span>{recipientDisplay}</span>
-              </div>
-              {bankDisplay && (
-                <div className="send-success__row">
-                  <span>Bank</span>
-                  <span>{bankDisplay}</span>
-                </div>
-              )}
-              {option === 'bank' && (
-                <div className="send-success__row">
-                  <span>Account No.</span>
-                  <span>{accountNumber}</span>
-                </div>
-              )}
-              <div className="send-success__row">
-                <span>Amount</span>
-                <span>{amountDisplay}</span>
-              </div>
-              <div className="send-success__row">
-                <span>Currency</span>
-                <span>{currencyCode}</span>
-              </div>
-              <div className="send-success__row">
-                <span>Reference</span>
-                <span>{txnRef}</span>
-              </div>
-              <div className="send-success__row">
-                <span>Date & Time</span>
-                <span>{txnDate}</span>
-              </div>
-              <div className="send-success__row">
-                <span>Status</span>
-                <span className="send-success__status">Completed</span>
-              </div>
-            </div>
-            <button className="send-btn-primary" type="button" onClick={handleDone}>Done</button>
-          </div>
           </div>
         )}
 

@@ -56,16 +56,7 @@ const navSections: NavSection[] = [
           { id: 'wal-accounts',   label: 'Accounts',           route: '/wallets'   },
           { id: 'wal-statements', label: 'Account Statements', route: '/transactions'   },
           { id: 'wal-beneficiary',label: 'Beneficiary',        route: '/beneficiaries' },
-          { id: 'wal-deposit',    label: 'Deposit Banks',      route: '/wallets'   },
-        ],
-      },
-      {
-        id: 'transfers',
-        label: 'Transfers',
-        icon: <TransferIcon size={17} color="currentColor" />,
-        children: [
-          { id: 'txn-copay', label: 'Copay Account', route: '/transfers' },
-          { id: 'txn-banks', label: 'Other Banks',   route: '/transfers' },
+          { id: 'wal-deposit',    label: 'Deposit Banks',      route: '/deposit-banks' },
         ],
       },
       { id: 'transactions', label: 'Transactions', icon: <TransactionsIcon size={17} color="currentColor" />, route: '/transactions' },
