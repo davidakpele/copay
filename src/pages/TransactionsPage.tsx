@@ -480,13 +480,7 @@ export default function TransactionsPage() {
           </div>
         )}
 
-        {/* ── Loading ─────────────────────────────────────────────────── */}
-        {loading && (
-          <div className="hist-loading">
-            <span className="send-ring-loader" aria-hidden="true" />
-            <p>Loading transactions…</p>
-          </div>
-        )}
+       
 
         {/* ── Empty state ─────────────────────────────────────────────── */}
         {!loading && hasSearched && results.length === 0 && (

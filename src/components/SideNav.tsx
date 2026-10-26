@@ -54,8 +54,8 @@ const navSections: NavSection[] = [
         icon: <WalletIcon size={17} color="currentColor" />,
         children: [
           { id: 'wal-accounts',   label: 'Accounts',           route: '/wallets'   },
-          { id: 'wal-statements', label: 'Account Statements', route: '/wallets'   },
-          { id: 'wal-beneficiary',label: 'Beneficiary',        route: '/wallets'   },
+          { id: 'wal-statements', label: 'Account Statements', route: '/transactions'   },
+          { id: 'wal-beneficiary',label: 'Beneficiary',        route: '/beneficiaries' },
           { id: 'wal-deposit',    label: 'Deposit Banks',      route: '/wallets'   },
         ],
       },
