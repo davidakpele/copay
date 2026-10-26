@@ -1,16 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import AppShell from '../components/AppShell';
 import WalletCard from '../components/WalletCard';
 import QuickActions from '../components/QuickActions';
 import { useWallet } from '../contexts/WalletContext';
 
-/* ─── Mock transactions ────────────────────────────────────────────── */
 interface Txn {
-  id: string; type: 'deposit' | 'withdrawal' | 'swap' | 'transfer' | 'credited';
-  description: string; date: string; amount: number; symbol: string;
+  id: string;
+  type: 'deposit' | 'withdrawal' | 'swap' | 'transfer' | 'credited';
+  description: string;
+  date: string;
+  amount: number;
+  symbol: string;
   status: 'completed' | 'pending' | 'failed';
-  ref: string; sessionId: string;
-  previousBalance: number; availableBalance: number;
+  ref: string;
+  sessionId: string;
+  previousBalance: number;
+  availableBalance: number;
   currency: string;
 }
 
@@ -45,26 +50,28 @@ const MOCK_TXNS: Record<string, Txn[]> = {
 
 const TABS = ['All', 'Deposits', 'Withdrawals', 'Swaps', 'Credited'];
 
-function fmt(n: number) {
-  return Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+function fmt(number: number) {
+  return Math.abs(number).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-function fmtDate(s: string) {
-  const d = new Date(s);
-  return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+function fmtDate(value: string) {
+  const date = new Date(value);
+  return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
 
-function isCredit(t: Txn) { return ['deposit', 'credited'].includes(t.type); }
+function isCredit(txn: Txn) {
+  return ['deposit', 'credited'].includes(txn.type);
+}
 
 function typeColor(type: Txn['type']) {
-  const m: Record<string, string> = {
+  const map: Record<string, string> = {
     deposit: '#2563eb',
     withdrawal: '#ef4444',
     swap: '#8b5cf6',
     transfer: '#3b82f6',
     credited: '#16a34a',
   };
-  return m[type] ?? '#6b7280';
+  return map[type] ?? '#6b7280';
 }
 
 function TypeIcon({ type }: { type: Txn['type'] }) {
@@ -96,10 +103,10 @@ function StatusBadge({ status }: { status: Txn['status'] }) {
 function DetailPanel({ txn }: { txn: Txn }) {
   const [copied, setCopied] = useState<string | null>(null);
 
-  function copy(key: string, val: string) {
-    navigator.clipboard.writeText(val).catch(() => {});
+  function copy(key: string, value: string) {
+    navigator.clipboard.writeText(value).catch(() => undefined);
     setCopied(key);
-    setTimeout(() => setCopied((k) => (k === key ? null : k)), 1500);
+    setTimeout(() => setCopied((current) => (current === key ? null : current)), 1500);
   }
 
   const rows = [
@@ -115,14 +122,14 @@ function DetailPanel({ txn }: { txn: Txn }) {
   return (
     <div className="wh-detail-panel">
       <div className="wh-detail-grid">
-        {rows.map((r) => (
-          <div key={r.key} className="wh-detail-item">
-            <span className="wh-detail-label">{r.label}</span>
+        {rows.map((row) => (
+          <div key={row.key} className="wh-detail-item">
+            <span className="wh-detail-label">{row.label}</span>
             <span className="wh-detail-value">
-              {r.value}
-              {['ref', 'ses'].includes(r.key) && (
-                <button className="wh-copy-btn" type="button" onClick={() => copy(r.key, r.value)} aria-label="Copy">
-                  {copied === r.key
+              {row.value}
+              {['ref', 'ses'].includes(row.key) && (
+                <button className="wh-copy-btn" type="button" onClick={() => copy(row.key, row.value)} aria-label="Copy">
+                  {copied === row.key
                     ? <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                     : <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" strokeWidth="1.8"/><path d="M5 15V5a2 2 0 0 1 2-2h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>}
                 </button>
@@ -151,8 +158,6 @@ function DetailPanel({ txn }: { txn: Txn }) {
 
 export default function WalletPage() {
   const { activeWallet } = useWallet();
-
-  const [showBalance, setShowBalance] = useState(false);
   const [activeTab, setActiveTab] = useState('All');
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [tabLoading, setTabLoading] = useState(false);
@@ -161,8 +166,8 @@ export default function WalletPage() {
   const [dateFilter, setDateFilter] = useState({ start: '', end: '' });
 
   useEffect(() => {
-    const t = setTimeout(() => setTxnLoading(false), 1400);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setTxnLoading(false), 1400);
+    return () => clearTimeout(timer);
   }, [activeWallet.currency]);
 
   function handleTabClick(tab: string) {
@@ -173,7 +178,7 @@ export default function WalletPage() {
   }
 
   const rawTxns = MOCK_TXNS[activeWallet.currency] ?? [];
-  const filtered = rawTxns.filter((t) => {
+  const filtered = rawTxns.filter((txn) => {
     if (activeTab !== 'All') {
       const map: Record<string, string[]> = {
         Deposits: ['deposit'],
@@ -181,19 +186,14 @@ export default function WalletPage() {
         Swaps: ['swap'],
         Credited: ['credited', 'transfer'],
       };
-      if (!map[activeTab]?.includes(t.type)) return false;
+      if (!map[activeTab]?.includes(txn.type)) return false;
     }
-    if (dateFilter.start && t.date.slice(0, 10) < dateFilter.start) return false;
-    if (dateFilter.end && t.date.slice(0, 10) > dateFilter.end) return false;
+    if (dateFilter.start && txn.date.slice(0, 10) < dateFilter.start) return false;
+    if (dateFilter.end && txn.date.slice(0, 10) > dateFilter.end) return false;
     return true;
   });
 
   const hasDateFilter = dateFilter.start || dateFilter.end;
-
-  function fmtBalance() {
-    if (!showBalance) return '•••••';
-    return activeWallet.symbol + activeWallet.balance.toLocaleString('en-US', { minimumFractionDigits: 2 });
-  }
 
   return (
     <AppShell>
@@ -222,7 +222,7 @@ export default function WalletPage() {
               <button
                 className={`wh-filter-btn${showDateFilter ? ' wh-filter-btn--open' : ''}`}
                 type="button"
-                onClick={() => setShowDateFilter((v) => !v)}
+                onClick={() => setShowDateFilter((value) => !value)}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M7 12h10M11 18h2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
                 Date Filter
@@ -237,11 +237,11 @@ export default function WalletPage() {
                 <div className="wh-date-filter__fields">
                   <div className="wh-date-filter__field">
                     <label>From</label>
-                    <input type="date" value={dateFilter.start} onChange={(e) => setDateFilter((f) => ({ ...f, start: e.target.value }))} />
+                    <input type="date" value={dateFilter.start} onChange={(event) => setDateFilter((state) => ({ ...state, start: event.target.value }))} />
                   </div>
                   <div className="wh-date-filter__field">
                     <label>To</label>
-                    <input type="date" value={dateFilter.end} onChange={(e) => setDateFilter((f) => ({ ...f, end: e.target.value }))} />
+                    <input type="date" value={dateFilter.end} onChange={(event) => setDateFilter((state) => ({ ...state, end: event.target.value }))} />
                   </div>
                 </div>
                 <div className="wh-date-filter__btns">
@@ -306,23 +306,24 @@ export default function WalletPage() {
                 {filtered.map((txn) => {
                   const expanded = expandedId === txn.id;
                   const credit = isCredit(txn);
-                  const amtColor = credit ? '#16a34a' : '#ef4444';
-                  const tc = typeColor(txn.type);
+                  const amountColor = credit ? '#16a34a' : '#ef4444';
+                  const tileColor = typeColor(txn.type);
+
                   return (
                     <div key={txn.id} className={`wh-txn-card${expanded ? ' wh-txn-card--expanded' : ''}`}>
                       <div
                         className="wh-txn-summary"
                         onClick={() => setExpandedId(expanded ? null : txn.id)}
-                        onTouchEnd={(e) => { e.preventDefault(); setExpandedId(expanded ? null : txn.id); }}
+                        onTouchEnd={(event) => { event.preventDefault(); setExpandedId(expanded ? null : txn.id); }}
                       >
-                        <div className="wh-txn-icon" style={{ background: `${tc}18`, color: tc }}>
+                        <div className="wh-txn-icon" style={{ background: `${tileColor}18`, color: tileColor }}>
                           <TypeIcon type={txn.type} />
                         </div>
 
                         <div className="wh-txn-info">
                           <div className="wh-txn-main">
                             <span className="wh-txn-type" style={expanded ? { color: '#fbbf24' } : {}}>{txn.type}</span>
-                            <span className="wh-txn-amount" style={{ color: amtColor }}>
+                            <span className="wh-txn-amount" style={{ color: amountColor }}>
                               {credit ? '+' : '-'}{txn.symbol}{fmt(txn.amount)}
                             </span>
                           </div>
