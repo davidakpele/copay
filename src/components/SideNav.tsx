@@ -85,10 +85,8 @@ const navSections: NavSection[] = [
         label: 'Settings',
         icon: <SettingsIcon size={17} color="currentColor" />,
         children: [
-          { id: 'set-profile',       label: 'Profile',       route: '/profile'                      },
-          { id: 'set-app',           label: 'App',           route: '/settings?tab=app'             },
-          { id: 'set-notifications', label: 'Notifications', route: '/settings?tab=notifications'   },
-          { id: 'set-wallet',        label: 'Wallet',        route: '/settings?tab=wallet'          },
+          { id: 'set-profile', label: 'Profile', route: '/profile' },
+          { id: 'set-settings', label: 'Settings', route: '/settings' },
         ],
       },
       { id: 'logout', label: 'Logout', icon: <LogoutNavIcon size={17} color="#e5403a" />, route: '/', isLogout: true },
@@ -206,3 +204,4 @@ export default function SideNav({ active, onChange, mobileOpen, onMobileClose }:
     </>
   );
 }
+
