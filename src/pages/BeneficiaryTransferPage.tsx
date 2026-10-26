@@ -21,10 +21,8 @@ export default function BeneficiaryTransferPage() {
   const [account,      setAccount]      = useState(prefill?.account  ?? '');
   const [narration,    setNarration]    = useState('');
   const [amount,       setAmount]       = useState('');
-  const [showBankDrop, setShowBankDrop] = useState(false);
   const bankRef = useRef<HTMLDivElement>(null);
 
-  const resolvedBank  = BANKS.find((b) => b.code === bankCode);
   const resolvedName  = prefill && bankCode === prefill.bankCode && account === prefill.account
     ? prefill.name.toUpperCase()
     : account.length === 10 ? 'ACCOUNT HOLDER' : '';

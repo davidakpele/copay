@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router';
 import type { NavItem } from '../types';
 import {
   HomeIcon,
-  TransferIcon,
   CardIcon,
   WalletIcon,
   BillNavIcon,
