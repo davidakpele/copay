@@ -8,11 +8,11 @@ interface NavTab {
 }
 
 const tabs: NavTab[] = [
-  { id: 'home',      label: 'Home',      icon: (a) => <HomeIcon     size={22} color={a ? '#111' : '#999'} /> },
+  { id: 'home', label: 'Home', icon: (a) => <HomeIcon size={22} color={a ? '#111' : '#999'} /> },
   { id: 'transfers', label: 'Transfers', icon: (a) => <TransferIcon size={22} color={a ? '#111' : '#999'} /> },
-  { id: 'cards',     label: 'Cards',     icon: (a) => <CardIcon     size={22} color={a ? '#111' : '#999'} /> },
-  { id: 'bills',     label: 'Bills',     icon: (a) => <BillNavIcon  size={22} color={a ? '#111' : '#999'} /> },
-  { id: 'settings',  label: 'More',      icon: (a) => <MoreIcon     size={22} color={a ? '#111' : '#999'} /> },
+  { id: 'cards', label: 'Cards', icon: (a) => <CardIcon size={22} color={a ? '#111' : '#999'} /> },
+  { id: 'bills', label: 'Bills', icon: (a) => <BillNavIcon size={22} color={a ? '#111' : '#999'} /> },
+  { id: 'settings', label: 'More', icon: (a) => <MoreIcon size={22} color={a ? '#111' : '#999'} /> },
 ];
 
 interface BottomNavProps {
@@ -29,6 +29,7 @@ export default function BottomNav({ active, onChange, onMoreClick, onBillsClick 
         const isActive = tab.id === active;
         const isMore = tab.label === 'More';
         const isBills = tab.id === 'bills';
+
         return (
           <button
             key={tab.id}
