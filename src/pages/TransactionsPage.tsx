@@ -281,19 +281,238 @@ function FilterSheet({
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// ─── Statement Modal ──────────────────────────────────────────────────────────
+
+function StatementModal({
+  filters,
+  results,
+  currency,
+  onClose,
+}: {
+  filters: FilterState;
+  results: Transaction[];
+  currency: string;
+  onClose: () => void;
+}) {
+  const [email,       setEmail]       = useState('');
+  const [format,      setFormat]      = useState<'PDF' | 'CSV' | 'EXCEL'>('PDF');
+  const [emailError,  setEmailError]  = useState('');
+  const [sending,     setSending]     = useState(false);
+  const [sent,        setSent]        = useState(false);
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  function handleSend(e: React.FormEvent) {
+    e.preventDefault();
+    setEmailError('');
+
+    if (!email.trim() || !emailRegex.test(email.trim())) {
+      setEmailError('Please enter a valid email address.');
+      return;
+    }
+    if (results.length === 0) {
+      setEmailError('No transactions to include. Apply filters first.');
+      return;
+    }
+
+    setSending(true);
+
+    // Build payload matching the reference SendStatementPayload structure
+    const statements = results.map((txn) => ({
+      id:           txn.id,
+      date:         txn.date,
+      description:  txn.description,
+      type:         txn.type,
+      currencyType: txn.currency,
+      netAmount:    txn.isCredit ? txn.amount : -txn.amount,
+      balance:      txn.balance,
+      reference:    txn.reference,
+    }));
+
+    const payload = {
+      email:            email.trim(),
+      format,
+      currency,
+      startDate:        filters.startDate || null,
+      endDate:          filters.endDate   || null,
+      transactionType:  filters.type !== 'ALL' ? filters.type : 'ALL',
+      status:           filters.status !== 'ALL' ? filters.status : 'ALL',
+      totalTransactions: results.length,
+      requestedAt:      new Date().toISOString(),
+      statements,
+    };
+
+    // Simulate network delay then log
+    setTimeout(() => {
+      console.log('=== Account Statement Payload ===');
+      console.log(JSON.stringify(payload, null, 2));
+      setSending(false);
+      setSent(true);
+    }, 1200);
+  }
+
+  return (
+    <div className="stmt-overlay" onClick={onClose}>
+      <div className="stmt-modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Request Statement">
+
+        {/* Header */}
+        <div className="stmt-modal__header">
+          <div className="stmt-modal__header-left">
+            <div className="stmt-modal__icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/>
+                <polyline points="14 2 14 8 20 8" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/>
+                <line x1="9" y1="13" x2="15" y2="13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+                <line x1="9" y1="17" x2="13" y2="17" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+              </svg>
+            </div>
+            <div>
+              <h2 className="stmt-modal__title">Request Account Statement</h2>
+              <p className="stmt-modal__subtitle">
+                {results.length} transaction{results.length !== 1 ? 's' : ''} · {currency} Wallet
+                {filters.startDate && filters.endDate
+                  ? ` · ${filters.startDate} → ${filters.endDate}`
+                  : ` · ${filters.period || 'All time'}`}
+              </p>
+            </div>
+          </div>
+          <button className="stmt-modal__close" type="button" onClick={onClose} aria-label="Close">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#555" strokeWidth="2.2" strokeLinecap="round"/></svg>
+          </button>
+        </div>
+
+        {/* Success state */}
+        {sent ? (
+          <div className="stmt-modal__success">
+            <div className="stmt-modal__success-icon">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <h3>Statement Requested!</h3>
+            <p>Your account statement has been sent to <strong>{email}</strong>. Check your inbox shortly.</p>
+            <button className="stmt-modal__done-btn" type="button" onClick={onClose}>Done</button>
+          </div>
+        ) : (
+          <form className="stmt-modal__form" onSubmit={handleSend} noValidate>
+
+            {/* Filter summary */}
+            <div className="stmt-modal__summary">
+              <div className="stmt-modal__summary-row">
+                <span>Transactions</span>
+                <strong>{results.length}</strong>
+              </div>
+              <div className="stmt-modal__summary-row">
+                <span>Currency</span>
+                <strong>{currency}</strong>
+              </div>
+              <div className="stmt-modal__summary-row">
+                <span>Period</span>
+                <strong>
+                  {filters.startDate && filters.endDate
+                    ? `${filters.startDate} → ${filters.endDate}`
+                    : filters.period || 'All time'}
+                </strong>
+              </div>
+              {filters.type !== 'ALL' && (
+                <div className="stmt-modal__summary-row">
+                  <span>Type filter</span>
+                  <strong>{filters.type}</strong>
+                </div>
+              )}
+            </div>
+
+            {/* Email field */}
+            <div className="stmt-modal__field">
+              <label className="stmt-modal__label" htmlFor="stmt-email">
+                Send to email address <span className="stmt-modal__required">*</span>
+              </label>
+              <input
+                id="stmt-email"
+                className={`stmt-modal__input${emailError ? ' stmt-modal__input--error' : ''}`}
+                type="email"
+                placeholder="e.g. ada.okafor@email.com"
+                value={email}
+                onChange={(e) => { setEmail(e.target.value); setEmailError(''); }}
+                autoFocus
+              />
+              {emailError && <p className="stmt-modal__error">{emailError}</p>}
+            </div>
+
+            {/* Format field */}
+            <div className="stmt-modal__field">
+              <label className="stmt-modal__label" htmlFor="stmt-format">Statement format</label>
+              <div className="stmt-modal__format-group">
+                {(['PDF', 'CSV', 'EXCEL'] as const).map((f) => (
+                  <label
+                    key={f}
+                    className={`stmt-modal__format-option${format === f ? ' stmt-modal__format-option--active' : ''}`}
+                  >
+                    <input
+                      type="radio"
+                      name="format"
+                      value={f}
+                      checked={format === f}
+                      onChange={() => setFormat(f)}
+                      className="sr-only"
+                    />
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      {f === 'PDF'   && <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/>}
+                      {f === 'CSV'   && <path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>}
+                      {f === 'EXCEL' && <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.8"/>}
+                    </svg>
+                    {f}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Note */}
+            <p className="stmt-modal__note">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.8"/>
+                <path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+              The statement will be generated based on your current filters and sent to the email address above.
+            </p>
+
+            {/* Submit */}
+            <button
+              className="stmt-modal__submit"
+              type="submit"
+              disabled={sending}
+            >
+              {sending ? (
+                <><span className="stmt-modal__spinner" /> Sending…</>
+              ) : (
+                <>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" strokeWidth="1.8"/>
+                    <polyline points="22,6 12,13 2,6" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/>
+                  </svg>
+                  Send Statement
+                </>
+              )}
+            </button>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default function TransactionsPage() {
   const { activeWallet, setActiveWallet } = useWallet();
-  const [walletOpen, setWalletOpen]   = useState(false);
-  const [periodOpen, setPeriodOpen]   = useState(false);
-  const [filterOpen, setFilterOpen]   = useState(false);
-  const [filters, setFilters]         = useState<FilterState>(DEFAULT_FILTERS);
-  const [detailTxn, setDetailTxn]     = useState<Transaction | null>(null);
-  const [loading, setLoading]         = useState(false);
-  const [results, setResults]         = useState<Transaction[]>(ALL_TRANSACTIONS);
-  const [page, setPage]               = useState(1);
-  const [hasSearched, setHasSearched] = useState(true);
+  const [walletOpen,       setWalletOpen]       = useState(false);
+  const [periodOpen,       setPeriodOpen]        = useState(false);
+  const [filterOpen,       setFilterOpen]        = useState(false);
+  const [filters,          setFilters]           = useState<FilterState>(DEFAULT_FILTERS);
+  const [detailTxn,        setDetailTxn]         = useState<Transaction | null>(null);
+  const [loading,          setLoading]           = useState(false);
+  const [results,          setResults]           = useState<Transaction[]>(ALL_TRANSACTIONS);
+  const [page,             setPage]              = useState(1);
+  const [hasSearched,      setHasSearched]       = useState(true);
+  const [stmtModalOpen,    setStmtModalOpen]     = useState(false);
   const walletRef = useRef<HTMLDivElement>(null);
   const periodRef = useRef<HTMLDivElement>(null);
 
@@ -362,6 +581,14 @@ export default function TransactionsPage() {
             onClose={() => setFilterOpen(false)}
           />
         </>
+      )}
+      {stmtModalOpen && (
+        <StatementModal
+          filters={filters}
+          results={results}
+          currency={activeWallet.currency}
+          onClose={() => setStmtModalOpen(false)}
+        />
       )}
 
       <div className="hist-page">
@@ -451,6 +678,24 @@ export default function TransactionsPage() {
             )}
             {/* Filter modal opens at top level */}
           </div>
+
+          {/* Request Statement button — only when filtered results exist */}
+          {results.length > 0 && (filters.type !== 'ALL' || filters.status !== 'ALL' || filters.wallet !== 'ALL' || (filters.startDate && filters.endDate) || filters.search) && (
+            <button
+              className="hist-stmt-btn"
+              type="button"
+              onClick={() => setStmtModalOpen(true)}
+              title="Request account statement"
+            >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/>
+              <polyline points="14 2 14 8 20 8" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/>
+              <line x1="9" y1="13" x2="15" y2="13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+              <line x1="9" y1="17" x2="12" y2="17" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+            </svg>
+            <span className="hist-stmt-btn__text">Statement</span>
+          </button>
+          )}
         </div>
 
         {/* ── Active filter chips ─────────────────────────────────────── */}

@@ -8,6 +8,7 @@ import BeneficiaryPage from '../pages/BeneficiaryPage';
 import BeneficiaryTransferPage from '../pages/BeneficiaryTransferPage';
 import DepositBankPage from '../pages/DepositBankPage';
 import WalletPage from '../pages/WalletPage';
+import BillsPage from '../pages/BillsPage';
 
 export default function AppRoutes() {
   return (
@@ -21,7 +22,7 @@ export default function AppRoutes() {
       <Route path="/beneficiary-transfer" element={<BeneficiaryTransferPage />}  />
       <Route path="/deposit-banks"        element={<DepositBankPage />}          />
       <Route path="/wallets"              element={<WalletPage />}               />
-      <Route path="/bills"          element={<HomePage />}         />
+      <Route path="/bills"                element={<BillsPage />}                />
       <Route path="*"               element={<HomePage />}         />
     </Routes>
   );
