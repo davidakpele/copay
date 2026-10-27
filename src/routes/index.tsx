@@ -9,6 +9,12 @@ import BeneficiaryTransferPage from '../pages/BeneficiaryTransferPage';
 import DepositBankPage from '../pages/DepositBankPage';
 import WalletPage from '../pages/WalletPage';
 import BillsPage from '../pages/BillsPage';
+import AirtimePage from '../pages/bills/AirtimePage';
+import DataPage from '../pages/bills/DataPage';
+import CableTVPage from '../pages/bills/CableTVPage';
+import ElectricityPage from '../pages/bills/ElectricityPage';
+import BettingPage from '../pages/bills/BettingPage';
+import ShoppingPage from '../pages/bills/ShoppingPage';
 
 export default function AppRoutes() {
   return (
@@ -23,6 +29,12 @@ export default function AppRoutes() {
       <Route path="/deposit-banks"        element={<DepositBankPage />}          />
       <Route path="/wallets"              element={<WalletPage />}               />
       <Route path="/bills"                element={<BillsPage />}                />
+      <Route path="/bills/airtime"        element={<AirtimePage />}              />
+      <Route path="/bills/data"           element={<DataPage />}                 />
+      <Route path="/bills/cable-tv"       element={<CableTVPage />}              />
+      <Route path="/bills/electricity"    element={<ElectricityPage />}          />
+      <Route path="/bills/betting"        element={<BettingPage />}              />
+      <Route path="/bills/shopping"       element={<ShoppingPage />}             />
       <Route path="*"               element={<HomePage />}         />
     </Routes>
   );
