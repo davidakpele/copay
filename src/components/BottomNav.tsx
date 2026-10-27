@@ -40,6 +40,7 @@ interface AppShellProps {
 export default function AppShell({ children, title, subtitle, rightPanel }: AppShellProps) {
   const navigate = useNavigate();
   const location = useLocation();
+
   const [notifOpen, setNotifOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
@@ -61,11 +62,7 @@ export default function AppShell({ children, title, subtitle, rightPanel }: AppS
       <PageLoader key={location.pathname} />
 
       <NotificationDrawer open={notifOpen} onClose={() => setNotifOpen(false)} />
-      <ServicesDrawer
-        open={servicesOpen}
-        view={servicesView}
-        onClose={() => setServicesOpen(false)}
-      />
+      <ServicesDrawer open={servicesOpen} view={servicesView} onClose={() => setServicesOpen(false)} />
 
       <div className="mobile-shell">
         <SideNav
