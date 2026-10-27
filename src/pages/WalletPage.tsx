@@ -444,7 +444,7 @@ export default function WalletPage() {
                         </button>
                       </div>
 
-                      {expanded && <DetailPanel txn={txn} />}
+                      {expanded && <DetailPanel txn={txn} onDelete={handleDelete} />}
                     </div>
                   );
                 })}
