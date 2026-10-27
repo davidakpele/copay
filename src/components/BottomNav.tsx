@@ -12,17 +12,17 @@ import PageLoader from './PageLoader';
 const NOTIF_COUNT = 2;
 
 const navRouteMap: Record<NavItem, string> = {
-  home:         '/',
-  transfers:    '/transfers',
-  cards:        '/cards',
-  wallets:      '/wallets',
-  bills:        '/bills',
+  home: '/',
+  transfers: '/transfers',
+  cards: '/cards',
+  wallets: '/wallets',
+  bills: '/bills',
   transactions: '/transactions',
-  settings:     '/settings',
-  exchange:     '/exchange',
-  refer:        '/',
-  investments:  '/',
-  support:      '/',
+  settings: '/settings',
+  exchange: '/exchange',
+  refer: '/',
+  investments: '/',
+  support: '/',
 };
 
 const routeNavMap: Record<string, NavItem> = {
@@ -61,7 +61,11 @@ export default function AppShell({ children, title, subtitle, rightPanel }: AppS
       <PageLoader key={location.pathname} />
 
       <NotificationDrawer open={notifOpen} onClose={() => setNotifOpen(false)} />
-      <ServicesDrawer open={servicesOpen} view={servicesView} onClose={() => setServicesOpen(false)} />
+      <ServicesDrawer
+        open={servicesOpen}
+        view={servicesView}
+        onClose={() => setServicesOpen(false)}
+      />
 
       <div className="mobile-shell">
         <SideNav
@@ -70,11 +74,13 @@ export default function AppShell({ children, title, subtitle, rightPanel }: AppS
           mobileOpen={mobileNavOpen}
           onMobileClose={() => setMobileNavOpen(false)}
         />
+
         <Header
           notifCount={NOTIF_COUNT}
           onBellClick={() => setNotifOpen(true)}
           onMenuClick={() => setMobileNavOpen(true)}
         />
+
         <div className="app-shell__scroll">
           <div className="mobile-greeting">
             <div className="app-header__greeting">
@@ -83,9 +89,10 @@ export default function AppShell({ children, title, subtitle, rightPanel }: AppS
           </div>
           <main className="app-main">{children}</main>
         </div>
+
         <BottomNav
           active={activeNav}
-          onChange={(tab) => {
+          onChange={(tab: NavItem) => {
             if (tab === 'bills') {
               openServices('bills');
               return;
@@ -104,23 +111,27 @@ export default function AppShell({ children, title, subtitle, rightPanel }: AppS
           mobileOpen={false}
           onMobileClose={() => {}}
         />
+
         <div className="desktop-shell__center">
           <DesktopTopBar
             notifCount={NOTIF_COUNT}
             onBellClick={() => setNotifOpen(true)}
           />
+
           <div className="desktop-shell__body">
             {(title || subtitle) && (
               <div className="desktop-shell__greeting">
-                {title    && <h1 className="desktop-greeting__title">{title}</h1>}
-                {subtitle && <p  className="desktop-greeting__sub">{subtitle}</p>}
+                {title && <h1 className="desktop-greeting__title">{title}</h1>}
+                {subtitle && <p className="desktop-greeting__sub">{subtitle}</p>}
               </div>
             )}
+
             <div className="desktop-shell__scroll">
               <main className="app-main">{children}</main>
             </div>
           </div>
         </div>
+
         {rightPanel ?? <div className="desktop-shell__no-panel" />}
       </div>
     </>
