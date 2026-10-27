@@ -40,9 +40,11 @@ interface AppShellProps {
 export default function AppShell({ children, title, subtitle, rightPanel }: AppShellProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [notifOpen, setNotifOpen]         = useState(false);
+
+  const [notifOpen,     setNotifOpen]     = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [servicesOpen, setServicesOpen]   = useState(false);
+  const [servicesOpen,  setServicesOpen]  = useState(false);
+  const [servicesView,  setServicesView]  = useState<'all' | 'bills'>('all');
 
   const activeNav: NavItem = routeNavMap[location.pathname] ?? 'home';
 
@@ -50,13 +52,19 @@ export default function AppShell({ children, title, subtitle, rightPanel }: AppS
     navigate(navRouteMap[tab]);
   }
 
+  function openServices(view: 'all' | 'bills' = 'all') {
+    setServicesView(view);
+    setServicesOpen(true);
+  }
+
   return (
     <>
       <PageLoader key={location.pathname} />
 
       <NotificationDrawer open={notifOpen} onClose={() => setNotifOpen(false)} />
-      <ServicesDrawer open={servicesOpen} onClose={() => setServicesOpen(false)} />
+      <ServicesDrawer open={servicesOpen} view={servicesView} onClose={() => setServicesOpen(false)} />
 
+      {/* ── Mobile shell ── */}
       <div className="mobile-shell">
         <SideNav
           active={activeNav}
@@ -79,11 +87,16 @@ export default function AppShell({ children, title, subtitle, rightPanel }: AppS
         </div>
         <BottomNav
           active={activeNav}
-          onChange={handleNavChange}
-          onMoreClick={() => setServicesOpen(true)}
+          onChange={(tab: NavItem) => {
+            if (tab === 'bills') { openServices('bills'); return; }
+            handleNavChange(tab);
+          }}
+          onMoreClick={() => openServices('all')}
+          onBillsClick={() => openServices('bills')}
         />
       </div>
 
+      {/* ── Desktop shell ── */}
       <div className="desktop-shell">
         <SideNav
           active={activeNav}

@@ -333,12 +333,28 @@ function NotificationsTab() {
 
 /* ─── Preferences tab ────────────────────────────────────────────── */
 function PreferencesTab() {
+  const [selectedTheme, setSelectedTheme] = useState<'light' | 'dark' | 'system'>('light');
   const [language, setLanguage] = useState('English');
   const [currency, setCurrency] = useState('USD');
 
   return (
     <div className="st-content">
       <Section title="Preferences" subtitle="Customise your app experience.">
+
+        {/* Theme */}
+        <Card icon={<GlobeSvg />} title="Appearance">
+          <div className="st-theme-grid">
+            {(['light', 'dark', 'system'] as const).map((t) => (
+              <label key={t} className={`st-theme-option${selectedTheme === t ? ' st-theme-option--active' : ''}`}>
+                <input type="radio" name="theme" value={t} checked={selectedTheme === t} onChange={() => setSelectedTheme(t)} className="sr-only" />
+                {t === 'light'  && <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="1.8"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>}
+                {t === 'dark'   && <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/></svg>}
+                {t === 'system' && <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="1.8"/><path d="M8 21h8M12 17v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>}
+                <span>{t.charAt(0).toUpperCase() + t.slice(1)}</span>
+              </label>
+            ))}
+          </div>
+        </Card>
 
         {/* Language + currency */}
         <Card icon={<GlobeSvg />} title="Localisation">
