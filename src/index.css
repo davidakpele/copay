@@ -283,6 +283,20 @@ ul, ol { list-style: none; }
   margin-top: var(--space-3);
 }
 
+.wallet-card__eye-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: opacity var(--ease);
+  flex-shrink: 0;
+}
+
+.wallet-card__eye-btn:hover { opacity: 0.75; }
+
 .wallet-card__balance-label {
   font-size: var(--text-sm);
   color: rgba(255,255,255,0.6);
@@ -2665,7 +2679,7 @@ ul, ol { list-style: none; }
 
 /* ── Send Select Screen (Payday-style) ── */
 .send-select__topbar {
-  background: #1a1a2e;
+  background: #000;
   padding: var(--space-4) var(--space-5);
   flex-shrink: 0;
   display: flex;
@@ -2765,7 +2779,7 @@ ul, ol { list-style: none; }
   width: 30px;
   height: 30px;
   border-radius: var(--radius-full);
-  background: #1a1a2e;
+  background: #000;
   display: flex;
   align-items: center;
   justify-content: center;

@@ -1,15 +1,14 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useWallet, wallets } from '../contexts/WalletContext';
 import type { Wallet } from '../types';
 import {
-  WalletIcon,
   EyeIcon,
+  EyeOffIcon,
   ChevronDownIcon,
   CheckIcon,
   PlusIcon,
   ChevronRightIcon,
 } from './Icons';
-import { useState } from 'react';
 
 const flagMap: Record<string, string> = {
   USD: '🇺🇸',
@@ -21,6 +20,7 @@ const flagMap: Record<string, string> = {
 export default function WalletCard() {
   const { activeWallet, setActiveWallet } = useWallet();
   const [dropdownOpen, setDropdownOpen]   = useState(false);
+  const [balanceVisible, setBalanceVisible] = useState(true);
   const currencyBtnRef = useRef<HTMLDivElement>(null);
   const wrapperRef     = useRef<HTMLDivElement>(null);
 
@@ -43,17 +43,6 @@ export default function WalletCard() {
     <div className="wallet-card-wrapper" ref={wrapperRef}>
       <div className="wallet-card">
         <div className="wallet-card__top">
-          <button
-            className="wallet-card__label-btn"
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-            aria-expanded={dropdownOpen}
-            aria-haspopup="listbox"
-          >
-            <WalletIcon size={15} color="#fff" />
-            <span>My Wallet</span>
-            <ChevronDownIcon size={13} color="#fff" />
-          </button>
-
           <div className="wallet-card__currency-anchor" ref={currencyBtnRef}>
             <button
               className="wallet-card__currency-btn"
@@ -105,10 +94,22 @@ export default function WalletCard() {
           </div>
         </div>
 
-        <div className="wallet-card__balance">{activeWallet.formatted}</div>
+        <div className="wallet-card__balance" aria-live="polite">
+          {balanceVisible ? activeWallet.formatted : '*****'}
+        </div>
 
         <div className="wallet-card__bottom">
-          <EyeIcon size={13} color="rgba(255,255,255,0.7)" />
+          <button
+            className="wallet-card__eye-btn"
+            type="button"
+            aria-label={balanceVisible ? 'Hide balance' : 'Show balance'}
+            onClick={() => setBalanceVisible((v) => !v)}
+          >
+            {balanceVisible
+              ? <EyeIcon size={14} color="rgba(255,255,255,0.7)" />
+              : <EyeOffIcon size={14} color="rgba(255,255,255,0.7)" />
+            }
+          </button>
           <span className="wallet-card__balance-label">Available balance</span>
         </div>
       </div>
