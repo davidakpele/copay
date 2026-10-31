@@ -1,58 +1,266 @@
-import type { NavItem } from '../types';
-import { HomeIcon, TransferIcon, CardIcon, BillNavIcon, MoreIcon } from './Icons';
+import {
+  XIcon,
+  AirtimeIcon,
+  DataBundleIcon,
+  SendIcon,
+  ReceiveIcon,
+  ElectricityIcon,
+  TvIcon,
+  WifiIcon,
+  WaterIcon,
+  SchoolIcon,
+  TaxIcon,
+  GovernmentIcon,
+  BettingIcon,
+  GiftCardIcon,
+  ExamPinIcon,
+  FlightIcon,
+  HotelIcon,
+  InsuranceIcon,
+  LoanPayIcon,
+  LoanApplyIcon,
+  SavingsIcon,
+  InvestIcon,
+  VirtualCardIcon,
+  DebitCardIcon,
+  QrCodeIcon,
+  MerchantIcon,
+  WithdrawIcon,
+  DepositIcon,
+  BankTransferIcon,
+  ExchangeIcon,
+  InternationalSendIcon,
+  InternationalReceiveIcon,
+  TransportIcon,
+  RideIcon,
+  FoodIcon,
+  TicketIcon,
+  StreamingIcon,
+  GamingIcon,
+  MedicalIcon,
+  VehicleIcon,
+  FineIcon,
+  RentIcon,
+  InsurancePremiumIcon,
+  SavingsGoalIcon,
+  AutoSaveIcon,
+  SubscriptionIcon,
+  RequestMoneyIcon,
+  SplitBillIcon,
+  ScheduleIcon,
+  BulkPaymentIcon,
+  SalaryIcon,
+  PaymentLinkIcon,
+  InvoiceIcon,
+  BuyNowPayLaterIcon,
+  CashbackIcon,
+  ReferEarnIcon,
+  TrackExpensesIcon,
+  StatementIcon,
+  ManageCardsIcon,
+  OpenAccountIcon,
+  UpgradeIcon,
+  BvnIcon,
+  NinIcon,
+  BlockAccountIcon,
+  FraudIcon,
+  SupportIcon,
+  AtmIcon,
+  PosIcon,
+  BankBranchIcon,
+} from './Icons';
 
-interface NavTab {
-  id: NavItem;
+interface Service {
   label: string;
-  icon: (active: boolean) => React.ReactNode;
+  icon: React.ReactNode;
+  color: string;
 }
 
-const tabs: NavTab[] = [
-  { id: 'home', label: 'Home', icon: (a) => <HomeIcon size={22} color={a ? '#111' : '#999'} /> },
-  { id: 'transfers', label: 'Transfers', icon: (a) => <TransferIcon size={22} color={a ? '#111' : '#999'} /> },
-  { id: 'cards', label: 'Cards', icon: (a) => <CardIcon size={22} color={a ? '#111' : '#999'} /> },
-  { id: 'bills', label: 'Bills', icon: (a) => <BillNavIcon size={22} color={a ? '#111' : '#999'} /> },
-  { id: 'settings', label: 'More', icon: (a) => <MoreIcon size={22} color={a ? '#111' : '#999'} /> },
+interface ServiceCategory {
+  title: string;
+  services: Service[];
+}
+
+const allServices: ServiceCategory[] = [
+  {
+    title: 'Top Up & Airtime',
+    services: [
+      { label: 'Buy Airtime',       icon: <AirtimeIcon     size={20} color="#fff" />, color: '#111'    },
+      { label: 'Buy Data Bundle',   icon: <DataBundleIcon  size={20} color="#fff" />, color: '#0ea5e9' },
+    ],
+  },
+  {
+    title: 'Send & Receive',
+    services: [
+      { label: 'Transfer Money',    icon: <SendIcon              size={20} color="#fff" />, color: '#111'    },
+      { label: 'Receive Money',     icon: <ReceiveIcon           size={20} color="#fff" />, color: '#16a34a' },
+      { label: 'Request Money',     icon: <RequestMoneyIcon      size={20} color="#fff" />, color: '#7c3aed' },
+      { label: 'Split Bills',       icon: <SplitBillIcon         size={20} color="#fff" />, color: '#ea580c' },
+      { label: 'Schedule Transfer', icon: <ScheduleIcon          size={20} color="#fff" />, color: '#0284c7' },
+      { label: 'Bulk Payments',     icon: <BulkPaymentIcon       size={20} color="#fff" />, color: '#374151' },
+      { label: 'Pay Salaries',      icon: <SalaryIcon            size={20} color="#fff" />, color: '#15803d' },
+    ],
+  },
+  {
+    title: 'Pay Bills',
+    services: [
+      { label: 'Pay Electricity',   icon: <ElectricityIcon       size={20} color="#fff" />, color: '#f59e0b' },
+      { label: 'Pay TV Sub',        icon: <TvIcon                size={20} color="#fff" />, color: '#8b5cf6' },
+      { label: 'Pay Internet',      icon: <WifiIcon              size={20} color="#fff" />, color: '#0891b2' },
+      { label: 'Pay Water',         icon: <WaterIcon             size={20} color="#fff" />, color: '#2563eb' },
+      { label: 'Pay School Fees',   icon: <SchoolIcon            size={20} color="#fff" />, color: '#d97706' },
+      { label: 'Pay Taxes',         icon: <TaxIcon               size={20} color="#fff" />, color: '#374151' },
+      { label: 'Government Bills',  icon: <GovernmentIcon        size={20} color="#fff" />, color: '#1e40af' },
+      { label: 'Pay Betting Wallet',icon: <BettingIcon           size={20} color="#fff" />, color: '#065f46' },
+      { label: 'Medical Bills',     icon: <MedicalIcon           size={20} color="#fff" />, color: '#dc2626' },
+      { label: 'Vehicle License',   icon: <VehicleIcon           size={20} color="#fff" />, color: '#92400e' },
+      { label: 'Traffic Fines',     icon: <FineIcon              size={20} color="#fff" />, color: '#b91c1c' },
+      { label: 'Pay Rent',          icon: <RentIcon              size={20} color="#fff" />, color: '#1d4ed8' },
+      { label: 'Insurance Premium', icon: <InsurancePremiumIcon  size={20} color="#fff" />, color: '#0f766e' },
+    ],
+  },
+  {
+    title: 'Travel & Lifestyle',
+    services: [
+      { label: 'Book Flights',      icon: <FlightIcon            size={20} color="#fff" />, color: '#0369a1' },
+      { label: 'Book Hotels',       icon: <HotelIcon             size={20} color="#fff" />, color: '#7e22ce' },
+      { label: 'Transportation',    icon: <TransportIcon         size={20} color="#fff" />, color: '#0284c7' },
+      { label: 'Ride-Hailing',      icon: <RideIcon              size={20} color="#fff" />, color: '#111'    },
+      { label: 'Food Delivery',     icon: <FoodIcon              size={20} color="#fff" />, color: '#ea580c' },
+      { label: 'Event Tickets',     icon: <TicketIcon            size={20} color="#fff" />, color: '#9333ea' },
+      { label: 'Streaming',         icon: <StreamingIcon         size={20} color="#fff" />, color: '#dc2626' },
+      { label: 'Gaming Vouchers',   icon: <GamingIcon            size={20} color="#fff" />, color: '#059669' },
+    ],
+  },
+  {
+    title: 'Shopping & Vouchers',
+    services: [
+      { label: 'Buy Gift Cards',    icon: <GiftCardIcon          size={20} color="#fff" />, color: '#db2777' },
+      { label: 'Buy Exam PIN',      icon: <ExamPinIcon           size={20} color="#fff" />, color: '#2563eb' },
+      { label: 'Buy Now Pay Later', icon: <BuyNowPayLaterIcon    size={20} color="#fff" />, color: '#d97706' },
+      { label: 'Earn Cashback',     icon: <CashbackIcon          size={20} color="#fff" />, color: '#16a34a' },
+      { label: 'Refer & Earn',      icon: <ReferEarnIcon         size={20} color="#fff" />, color: '#7c3aed' },
+    ],
+  },
+  {
+    title: 'Finance & Investments',
+    services: [
+      { label: 'Buy Insurance',     icon: <InsuranceIcon         size={20} color="#fff" />, color: '#0f766e' },
+      { label: 'Pay Loan',          icon: <LoanPayIcon           size={20} color="#fff" />, color: '#374151' },
+      { label: 'Apply for Loan',    icon: <LoanApplyIcon         size={20} color="#fff" />, color: '#1d4ed8' },
+      { label: 'Save Money',        icon: <SavingsIcon           size={20} color="#fff" />, color: '#15803d' },
+      { label: 'Invest Money',      icon: <InvestIcon            size={20} color="#fff" />, color: '#b45309' },
+      { label: 'Savings Goal',      icon: <SavingsGoalIcon       size={20} color="#fff" />, color: '#0891b2' },
+      { label: 'Auto Savings',      icon: <AutoSaveIcon          size={20} color="#fff" />, color: '#6d28d9' },
+      { label: 'Manage Subs',       icon: <SubscriptionIcon      size={20} color="#fff" />, color: '#111'    },
+    ],
+  },
+  {
+    title: 'Cards & Payments',
+    services: [
+      { label: 'Virtual Card',      icon: <VirtualCardIcon       size={20} color="#fff" />, color: '#111'    },
+      { label: 'Request Debit Card',icon: <DebitCardIcon         size={20} color="#fff" />, color: '#374151' },
+      { label: 'Pay with QR',       icon: <QrCodeIcon            size={20} color="#fff" />, color: '#0284c7' },
+      { label: 'Pay Merchants',     icon: <MerchantIcon          size={20} color="#fff" />, color: '#b45309' },
+      { label: 'Payment Links',     icon: <PaymentLinkIcon       size={20} color="#fff" />, color: '#7c3aed' },
+      { label: 'Generate Invoice',  icon: <InvoiceIcon           size={20} color="#fff" />, color: '#059669' },
+      { label: 'Manage Cards',      icon: <ManageCardsIcon       size={20} color="#fff" />, color: '#111'    },
+    ],
+  },
+  {
+    title: 'Transfers & Exchange',
+    services: [
+      { label: 'Withdraw Money',    icon: <WithdrawIcon          size={20} color="#fff" />, color: '#374151' },
+      { label: 'Deposit Money',     icon: <DepositIcon           size={20} color="#fff" />, color: '#16a34a' },
+      { label: 'Bank Transfer',     icon: <BankTransferIcon      size={20} color="#fff" />, color: '#1d4ed8' },
+      { label: 'Exchange Currency', icon: <ExchangeIcon          size={20} color="#fff" />, color: '#b45309' },
+      { label: 'Send Intl',         icon: <InternationalSendIcon size={20} color="#fff" />, color: '#111'    },
+      { label: 'Receive Intl',      icon: <InternationalReceiveIcon size={20} color="#fff" />, color: '#0f766e' },
+    ],
+  },
+  {
+    title: 'Account & Tools',
+    services: [
+      { label: 'Track Expenses',    icon: <TrackExpensesIcon     size={20} color="#fff" />, color: '#0891b2' },
+      { label: 'Account Statement', icon: <StatementIcon         size={20} color="#fff" />, color: '#374151' },
+      { label: 'Open Account',      icon: <OpenAccountIcon       size={20} color="#fff" />, color: '#15803d' },
+      { label: 'Upgrade Account',   icon: <UpgradeIcon           size={20} color="#fff" />, color: '#7c3aed' },
+      { label: 'Verify BVN',        icon: <BvnIcon               size={20} color="#fff" />, color: '#1d4ed8' },
+      { label: 'Verify NIN',        icon: <NinIcon               size={20} color="#fff" />, color: '#0369a1' },
+      { label: 'Block Account',     icon: <BlockAccountIcon      size={20} color="#fff" />, color: '#dc2626' },
+      { label: 'Report Fraud',      icon: <FraudIcon             size={20} color="#fff" />, color: '#b91c1c' },
+      { label: 'Customer Support',  icon: <SupportIcon           size={20} color="#fff" />, color: '#111'    },
+      { label: 'Locate ATMs',       icon: <AtmIcon               size={20} color="#fff" />, color: '#374151' },
+      { label: 'Locate POS',        icon: <PosIcon               size={20} color="#fff" />, color: '#374151' },
+      { label: 'Bank Branches',     icon: <BankBranchIcon        size={20} color="#fff" />, color: '#1e40af' },
+    ],
+  },
 ];
 
-interface BottomNavProps {
-  active: NavItem;
-  onChange: (tab: NavItem) => void;
-  onMoreClick: () => void;
-  onBillsClick: () => void;
+const billServices: ServiceCategory[] = [
+  {
+    title: 'Pay Bills',
+    services: allServices.find((c) => c.title === 'Pay Bills')?.services ?? [],
+  },
+];
+
+type ServicesView = 'all' | 'bills';
+
+interface ServicesDrawerProps {
+  open: boolean;
+  onClose: () => void;
+  view?: ServicesView;
 }
 
-export default function BottomNav({ active, onChange, onMoreClick, onBillsClick }: BottomNavProps) {
-  return (
-    <nav className="bottom-nav" aria-label="Primary navigation">
-      {tabs.map((tab) => {
-        const isActive = tab.id === active;
-        const isMore = tab.label === 'More';
-        const isBills = tab.id === 'bills';
+export default function ServicesDrawer({ open, onClose, view = 'all' }: ServicesDrawerProps) {
+  const visibleCategories = view === 'bills' ? billServices : allServices;
+  const title    = view === 'bills' ? 'Pay Bills'     : 'All Services';
+  const subtitle = view === 'bills'
+    ? 'Bills and utility payments available in Copay'
+    : 'Everything you can do with Copay';
 
-        return (
+  return (
+    <>
+      {open && <div className="drawer-overlay" onClick={onClose} aria-hidden="true" />}
+
+      <aside
+        className={`services-drawer${open ? ' services-drawer--open' : ''}`}
+        aria-label={title}
+        aria-hidden={!open}
+      >
+        <div className="services-drawer__header">
+          <div>
+            <h2 className="services-drawer__title">{title}</h2>
+            <p className="services-drawer__subtitle">{subtitle}</p>
+          </div>
           <button
-            key={tab.id}
-            className={`bottom-nav__tab${isActive ? ' bottom-nav__tab--active' : ''}`}
-            onClick={() => {
-              if (isMore) {
-                onMoreClick();
-                return;
-              }
-              if (isBills) {
-                onBillsClick();
-                return;
-              }
-              onChange(tab.id);
-            }}
+            className="services-drawer__close"
+            onClick={onClose}
+            aria-label="Close services"
             type="button"
-            aria-current={isActive ? 'page' : undefined}
           >
-            <span className="bottom-nav__icon">{tab.icon(isActive)}</span>
-            <span className="bottom-nav__label">{tab.label}</span>
+            <XIcon size={18} color="#555" />
           </button>
-        );
-      })}
-    </nav>
+        </div>
+
+        <div className="services-drawer__body">
+          {visibleCategories.map((cat) => (
+            <section key={cat.title} className="services-category">
+              <h3 className="services-category__title">{cat.title}</h3>
+              <div className="services-grid">
+                {cat.services.map((service) => (
+                  <button key={service.label} className="service-item" type="button">
+                    <span className="service-item__icon" style={{ background: service.color }}>
+                      {service.icon}
+                    </span>
+                    <span className="service-item__label">{service.label}</span>
+                  </button>
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
+      </aside>
+    </>
   );
 }

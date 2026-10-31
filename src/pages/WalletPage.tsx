@@ -100,8 +100,9 @@ function StatusBadge({ status }: { status: Txn['status'] }) {
   return <span className="wh-status" style={{ background: bg, color }}>{label}</span>;
 }
 
-function DetailPanel({ txn }: { txn: Txn }) {
-  const [copied, setCopied] = useState<string | null>(null);
+function DetailPanel({ txn, onDelete }: { txn: Txn; onDelete: (id: string) => void }) {
+  const [copied,      setCopied]      = useState<string | null>(null);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   function copy(key: string, value: string) {
     navigator.clipboard.writeText(value).catch(() => undefined);
@@ -109,50 +110,145 @@ function DetailPanel({ txn }: { txn: Txn }) {
     setTimeout(() => setCopied((current) => (current === key ? null : current)), 1500);
   }
 
-  const rows = [
-    { label: 'Reference No.', key: 'ref', value: txn.ref },
-    { label: 'Session ID', key: 'ses', value: txn.sessionId },
-    { label: 'Date', key: 'date', value: fmtDate(txn.date) },
-    { label: 'Prev. Balance', key: 'prev', value: txn.symbol + fmt(txn.previousBalance) },
-    { label: 'Avail. Balance', key: 'avail', value: txn.symbol + fmt(txn.availableBalance) },
-    { label: 'Currency', key: 'curr', value: txn.currency },
-    { label: 'Status', key: 'stat', value: txn.status },
+  const credit     = isCredit(txn);
+  const amtColor   = credit ? '#16a34a' : '#ef4444';
+  const tc         = typeColor(txn.type);
+
+  const infoRows = [
+    { label: 'Reference No.', key: 'ref',   value: txn.ref,                               copyable: true  },
+    { label: 'Session ID',    key: 'ses',   value: txn.sessionId,                         copyable: true  },
+    { label: 'Date',          key: 'date',  value: fmtDate(txn.date),                     copyable: false },
+    { label: 'Currency',      key: 'curr',  value: txn.currency,                          copyable: false },
+    { label: 'Prev. Balance', key: 'prev',  value: txn.symbol + fmt(txn.previousBalance), copyable: false },
+    { label: 'Avail. Balance',key: 'avail', value: txn.symbol + fmt(txn.availableBalance),copyable: false },
+    { label: 'Type',          key: 'type',  value: txn.type,                              copyable: false },
+    { label: 'Status',        key: 'stat',  value: txn.status,                            copyable: false },
   ];
 
   return (
-    <div className="wh-detail-panel">
-      <div className="wh-detail-grid">
-        {rows.map((row) => (
-          <div key={row.key} className="wh-detail-item">
-            <span className="wh-detail-label">{row.label}</span>
-            <span className="wh-detail-value">
-              {row.value}
-              {['ref', 'ses'].includes(row.key) && (
-                <button className="wh-copy-btn" type="button" onClick={() => copy(row.key, row.value)} aria-label="Copy">
-                  {copied === row.key
-                    ? <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                    : <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" strokeWidth="1.8"/><path d="M5 15V5a2 2 0 0 1 2-2h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>}
-                </button>
-              )}
-            </span>
+    <>
+      <div className="wh-detail-panel">
+
+        {/* ── Hero row ── */}
+        <div className="wh-detail-hero">
+          <div className="wh-detail-hero__icon" style={{ background: `${tc}18`, color: tc }}>
+            <TypeIcon type={txn.type} />
           </div>
-        ))}
+          <div className="wh-detail-hero__body">
+            <p className="wh-detail-hero__desc">{txn.description}</p>
+            <p className="wh-detail-hero__amount" style={{ color: amtColor }}>
+              {credit ? '+' : '-'}{txn.symbol}{fmt(txn.amount)}
+            </p>
+          </div>
+          <StatusBadge status={txn.status} />
+        </div>
+
+        {/* ── Info cards 2-col grid ── */}
+        <div className="wh-detail-cards">
+          {infoRows.map((row) => (
+            <div key={row.key} className="wh-detail-card">
+              <span className="wh-detail-card__label">{row.label}</span>
+              <div className="wh-detail-card__value-row">
+                {row.key === 'stat' ? (
+                  <span className="wh-detail-card__status-pill" style={{
+                    background: txn.status === 'completed' ? '#dcfce7' : txn.status === 'pending' ? '#fef9c3' : '#fee2e2',
+                    color:      txn.status === 'completed' ? '#16a34a' : txn.status === 'pending' ? '#a16207' : '#dc2626',
+                  }}>{txn.status}</span>
+                ) : row.key === 'ref' || row.key === 'ses' ? (
+                  <span className="wh-detail-card__mono">{row.value}</span>
+                ) : (
+                  <span className="wh-detail-card__value">{row.value}</span>
+                )}
+                {row.copyable && (
+                  <button
+                    className={`wh-detail-copy${copied === row.key ? ' wh-detail-copy--done' : ''}`}
+                    type="button"
+                    onClick={() => copy(row.key, row.value)}
+                    aria-label={`Copy ${row.label}`}
+                  >
+                    {copied === row.key
+                      ? <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      : <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" strokeWidth="1.8"/><path d="M5 15V5a2 2 0 0 1 2-2h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>}
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* ── Action buttons ── */}
+        <div className="wh-detail-actions">
+          <button className="wh-action-btn wh-action-btn--print" type="button">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6 9V2h12v7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+              <rect x="6" y="14" width="12" height="6" rx="1" stroke="currentColor" strokeWidth="1.8"/>
+            </svg>
+            Print
+          </button>
+          <button className="wh-action-btn wh-action-btn--view" type="button">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8"/>
+              <path d="M2 12s4-8 10-8 10 8 10 8-4 8-10 8-10-8-10-8z" stroke="currentColor" strokeWidth="1.8"/>
+            </svg>
+            View Receipt
+          </button>
+          <button
+            className="wh-action-btn wh-action-btn--delete"
+            type="button"
+            onClick={() => setShowConfirm(true)}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <polyline points="3 6 5 6 21 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M10 11v6M14 11v6M9 6V4h6v2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Delete
+          </button>
+        </div>
       </div>
-      <div className="wh-detail-actions">
-        <button className="wh-action-btn wh-action-btn--print" type="button">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 9V2h12v7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/><path d="M6 14h12v6H6z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/></svg>
-          Print
-        </button>
-        <button className="wh-action-btn wh-action-btn--view" type="button">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8"/><path d="M2 12s4-8 10-8 10 8 10 8-4 8-10 8-10-8-10-8z" stroke="currentColor" strokeWidth="1.8"/></svg>
-          View Receipt
-        </button>
-        <button className="wh-action-btn wh-action-btn--delete" type="button">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/><path d="M10 11v6M14 11v6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>
-          Delete
-        </button>
-      </div>
-    </div>
+
+      {/* ── Delete confirmation modal ── */}
+      {showConfirm && (
+        <div className="wh-confirm-overlay" onClick={() => setShowConfirm(false)}>
+          <div className="wh-confirm-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="wh-confirm-modal__icon">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <polyline points="3 6 5 6 21 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M10 11v6M14 11v6M9 6V4h6v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <h3 className="wh-confirm-modal__title">Delete Transaction</h3>
+            <p className="wh-confirm-modal__body">
+              Are you sure you want to delete this transaction? This action cannot be undone.
+            </p>
+            <div className="wh-confirm-modal__meta">
+              <span>{txn.description}</span>
+              <span style={{ color: amtColor, fontWeight: 700 }}>
+                {credit ? '+' : '-'}{txn.symbol}{fmt(txn.amount)}
+              </span>
+            </div>
+            <div className="wh-confirm-modal__actions">
+              <button
+                className="wh-confirm-modal__btn wh-confirm-modal__btn--ghost"
+                type="button"
+                onClick={() => setShowConfirm(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="wh-confirm-modal__btn wh-confirm-modal__btn--danger"
+                type="button"
+                onClick={() => { onDelete(txn.id); setShowConfirm(false); }}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -164,6 +260,12 @@ export default function WalletPage() {
   const [txnLoading, setTxnLoading] = useState(true);
   const [showDateFilter, setShowDateFilter] = useState(false);
   const [dateFilter, setDateFilter] = useState({ start: '', end: '' });
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
+
+  function handleDelete(id: string) {
+    setDeletedIds((prev) => new Set([...prev, id]));
+    setExpandedId(null);
+  }
 
   useEffect(() => {
     const timer = setTimeout(() => setTxnLoading(false), 1400);
@@ -179,6 +281,7 @@ export default function WalletPage() {
 
   const rawTxns = MOCK_TXNS[activeWallet.currency] ?? [];
   const filtered = rawTxns.filter((txn) => {
+    if (deletedIds.has(txn.id)) return false;
     if (activeTab !== 'All') {
       const map: Record<string, string[]> = {
         Deposits: ['deposit'],
@@ -341,7 +444,7 @@ export default function WalletPage() {
                         </button>
                       </div>
 
-                      {expanded && <DetailPanel txn={txn} />}
+                      {expanded && <DetailPanel txn={txn} onDelete={handleDelete} />}
                     </div>
                   );
                 })}

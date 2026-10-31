@@ -28,16 +28,16 @@ const BANK_OPTIONS = [
 ];
 
 const MOCK_ACCOUNT_NAMES: Record<string, string> = {
-  '0045324223': 'AKPELE BECKY',
-  '0094436229': 'AKPELE DAVID',
-  '3067601698': 'AKPELE JAMES',
-  '4963061459': 'MAGDALENE EIGBOJIE',
-  '0112345678': 'CHINEDU OBI',
+  '123456891': 'KIM BECKY',
+  '123456892': 'CHRISTIAN DAVID',
+  '123456893': 'WILLIAMS JAMES',
+  '123456894': 'MAGDALENE EIGBOJIE',
+  '123456895': 'CHINEDU OBI',
 };
 
 export let depositBankAccounts: BankAccount[] = [
-  { id: '1', bankName: 'Access Bank',  bankCode: 'ACC', accountNumber: '0045324223', accountName: 'AKPELE BECKY',       currency: 'NGN', addedDate: '2024-11-01' },
-  { id: '2', bankName: 'Union Bank',   bankCode: 'UBN', accountNumber: '0094436229', accountName: 'AKPELE DAVID',       currency: 'NGN', addedDate: '2024-12-15' },
+  { id: '1', bankName: 'Access Bank',  bankCode: 'ACC', accountNumber: '1234567891', accountName: 'KIM BECKY',       currency: 'NGN', addedDate: '2024-11-01' },
+  { id: '2', bankName: 'Union Bank',   bankCode: 'UBN', accountNumber: '1234567892', accountName: 'CHRISTIAN DAVID',       currency: 'NGN', addedDate: '2024-12-15' },
 ];
 
 /* ─── Bank icon SVG ──────────────────────────────────────────────── */
