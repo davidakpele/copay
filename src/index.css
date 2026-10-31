@@ -250,17 +250,20 @@ ul, ol { list-style: none; }
 .wallet-card__label-btn:hover { background: rgba(255,255,255,0.08); }
 
 .wallet-card__currency-btn {
-  display: flex;
   align-items: center;
   gap: var(--space-2);
-  color: rgba(255,255,255,0.9);
+  color: #ffffffe6;
   font-size: var(--text-sm);
-  font-weight: 600;
-  padding: 5px 10px;
   border-radius: var(--radius-full);
-  background: rgba(255,255,255,0.1);
   transition: background var(--ease);
   letter-spacing: var(--ls-wide);
+  background: #ffffff1a;
+  padding: 5px 10px;
+  font-weight: 600;
+  display: flex;
+  width: 150px;
+  text-align: center;
+  justify-content: center;
 }
 
 .wallet-card__currency-btn:hover { background: rgba(255,255,255,0.16); }
@@ -2677,7 +2680,6 @@ ul, ol { list-style: none; }
   font-weight: 400;
 }
 
-/* ── Send Select Screen (Payday-style) ── */
 .send-select__topbar {
   background: #000;
   padding: var(--space-4) var(--space-5);
