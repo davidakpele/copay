@@ -231,7 +231,7 @@ ul, ol { list-style: none; }
 .wallet-card__top {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 .wallet-card__label-btn {
