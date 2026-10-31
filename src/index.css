@@ -1627,7 +1627,7 @@ ul, ol { list-style: none; }
   }
 
   .app-header__avatar {
-    background: #222;
+    background: rgba(240, 189, 48, 0.729);
     border: 2px solid rgba(255, 255, 255, 0.2);
     color: #fff;
   }
@@ -2725,7 +2725,7 @@ ul, ol { list-style: none; }
 
 .send-select__card-icon {
   width: 26px;
-  height: px;
+  height: 26px;
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
@@ -2733,19 +2733,11 @@ ul, ol { list-style: none; }
   flex-shrink: 0;
 }
 
-.send-select__card-icon--copay {
-  /* no background or border — shows live currency symbol */
-}
-
 .send-select__card-symbol {
   font-size: 26px;
-  font-weight: 700;
+  font-weight: 400;
   color: #000;
   line-height: 1;
-}
-
-.send-select__card-icon--bank {
-  /* no background or border */
 }
 
 .send-select__card-text {
@@ -3285,16 +3277,10 @@ ul, ol { list-style: none; }
 .side-nav .side-nav__promo-btn:hover {
   background: #2a2a2a;
 }
-
-/* Mobile greeting: shown just before the wallet card on mobile. */
 .mobile-greeting {
   padding: var(--space-4) var(--space-4) 0;
 }
 
-
-/* ============================================================
-   Side nav: white background, black text (per request)
-   ============================================================ */
 .side-nav {
   background: #ffffff;
   border-right: 1px solid var(--color-border);
