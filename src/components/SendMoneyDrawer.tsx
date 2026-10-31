@@ -351,7 +351,7 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
                     <input
                       className="send-field__input"
                       type="text"
-                      placeholder="@username"
+                      placeholder="Enter username or Copay ID"
                       value={username}
                       onChange={(e) => { setUsername(e.target.value); setUsernameStatus('idle'); setResolvedName(''); }}
                       onBlur={handleUsernameBlur}

@@ -231,7 +231,7 @@ ul, ol { list-style: none; }
 .wallet-card__top {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
 }
 
 .wallet-card__label-btn {
@@ -1652,6 +1652,16 @@ ul, ol { list-style: none; }
   .app-header__notif-badge {
     border-color: #000;
   }
+
+  .wallet-card__top {
+    justify-content: center;
+  }
+
+  .wallet-card__currency-btn {
+    width: 150px;
+    text-align: center;
+    justify-content: center;
+  }
 }
 
 @media (max-width: 1023px) {
@@ -2825,7 +2835,7 @@ ul, ol { list-style: none; }
 
 .send-field__label {
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 700;
   color: var(--color-ink);
   letter-spacing: var(--ls-base);
 }
@@ -2833,46 +2843,53 @@ ul, ol { list-style: none; }
 .send-field__input-wrap {
   display: flex;
   align-items: center;
-  border: 1.5px solid var(--color-border);
+  border: 1.5px solid transparent;
   border-radius: 5px;
-  background: var(--color-surface);
-  transition: border-color var(--ease);
+  background: var(--color-surface-2);
+  transition: border-color var(--ease), background var(--ease);
   overflow: hidden;
 }
 
-.send-field__input-wrap:focus-within { border-color: var(--color-ink); }
-.send-field__input-wrap--valid       { border-color: #16a34a; }
-.send-field__input-wrap--invalid     { border-color: #dc2626; }
+.send-field__input-wrap:focus-within {
+  border-color: var(--color-ink);
+  background: var(--color-surface);
+}
+.send-field__input-wrap--valid   { border-color: #16a34a !important; background: #f0fdf4; }
+.send-field__input-wrap--invalid { border-color: #dc2626 !important; background: #fef2f2; }
 
 .send-field__prefix {
   padding: 0 var(--space-3);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--color-ink-tertiary);
-  border-right: 1px solid var(--color-border);
-  height: 40px;
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--color-ink-secondary);
+  border-right: 1.5px solid var(--color-border);
+  height: 42px;
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  background: var(--color-surface-2);
+  background: transparent;
 }
 
 .send-field__input {
   flex: 1;
   border: none;
   outline: none;
-  padding: 0 var(--space-3);
+  padding: 0 var(--space-4);
   font-family: var(--font);
   font-size: var(--text-base);
+  font-weight: 500;
   color: var(--color-ink);
   background: transparent;
-  height: 45px;
+  height: 42px;
   width: 100%;
 }
 
 .send-field__input--prefixed { padding-left: var(--space-3); }
 
-.send-field__input::placeholder { color: var(--color-ink-disabled); }
+.send-field__input::placeholder {
+  color: var(--color-ink-disabled);
+  font-weight: 400;
+}
 
 .send-field__input::-webkit-outer-spin-button,
 .send-field__input::-webkit-inner-spin-button { -webkit-appearance: none; }
@@ -2882,12 +2899,12 @@ ul, ol { list-style: none; }
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  font-size: var(--text-base);
+  font-size: var(--text-sm);
   font-weight: 700;
 }
 
 .send-field__status--spin { animation: spin 0.7s linear infinite; }
-.send-field__status--ok   { color: #16a34a; }
+.send-field__status--ok   { color: #16a34a; font-size: var(--text-xs); letter-spacing: 0.3px; }
 .send-field__status--err  { color: #dc2626; }
 
 @keyframes spin {
@@ -2896,9 +2913,10 @@ ul, ol { list-style: none; }
 }
 
 .send-field__hint {
-  font-size: var(--text-sm);
-  font-weight: 500;
+  font-size: var(--text-xs);
+  font-weight: 600;
   margin-top: 2px;
+  padding-left: 2px;
 }
 
 .send-field__hint--ok  { color: #16a34a; }
@@ -2906,21 +2924,25 @@ ul, ol { list-style: none; }
 
 .send-field__select {
   width: 100%;
-  height: 45px;
-  border: 1.5px solid var(--color-border);
-  border-radius:5px;
-  padding: 0 var(--space-3);
+  height: 42px;
+  border: 1.5px solid transparent;
+  border-radius: 5px;
+  padding: 0 var(--space-4);
   font-family: var(--font);
   font-size: var(--text-base);
+  font-weight: 500;
   color: var(--color-ink);
-  background: var(--color-surface);
+  background: var(--color-surface-2);
   outline: none;
   cursor: pointer;
-  transition: border-color var(--ease);
+  transition: border-color var(--ease), background var(--ease);
   appearance: auto;
 }
 
-.send-field__select:focus { border-color: var(--color-ink); }
+.send-field__select:focus {
+  border-color: var(--color-ink);
+  background: var(--color-surface);
+}
 
 .send-btn-primary {
   width: 100%;
