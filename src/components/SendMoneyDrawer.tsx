@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useWallet } from '../contexts/WalletContext';
 import { useNavigate } from 'react-router';
-import { XIcon, CopayIcon, BankIcon, CheckCircleIcon, SpinnerIcon, ChevronRightIcon } from './Icons';
+import { XIcon, BankIcon, CheckCircleIcon, SpinnerIcon, ChevronRightIcon, MapPinIcon } from './Icons';
 import { depositBankAccounts } from '../pages/DepositBankPage';
 
 type SendOption = 'copay' | 'bank';
@@ -221,39 +221,50 @@ export default function SendMoneyDrawer({ open, onClose }: SendMoneyDrawerProps)
         {/* ── Step 1: choose method ── */}
         {step === 'select' && (
           <>
-            <div className="send-drawer__header">
-              <div>
-                <h2 className="send-drawer__title">Send Money</h2>
-                <p className="send-drawer__subtitle">Choose how you want to send</p>
-              </div>
-              <button className="send-drawer__close" onClick={onClose} type="button" aria-label="Close">
-                <XIcon size={18} color="#555" />
+            <div className="send-select__topbar">
+              <button className="send-select__prev-btn" onClick={onClose} type="button" aria-label="Close">
+                <span className="send-select__prev-chevron">
+                  <ChevronRightIcon size={16} color="#fff" />
+                </span>
+                <span>Previous</span>
               </button>
             </div>
-            <div className="send-drawer__body">
-              <div className="send-options">
-                <button className="send-option-card" type="button" onClick={() => { setOption('copay'); setStep('form'); }}>
-                  <span className="send-option-card__icon send-option-card__icon--copay">
-                    <CopayIcon size={20} color="#fff" />
+            <div className="send-select__body">
+              <div className="send-select__options">
+
+                <button className="send-select__card" type="button" onClick={() => { setOption('copay'); setStep('form'); }}>
+                  <span className="send-select__card-icon send-select__card-icon--copay">
+                    <span className="send-select__card-symbol">{currencySymbol}</span>
                   </span>
-                  <div className="send-option-card__text">
-                    <span className="send-option-card__title">Copay to Copay</span>
-                    <span className="send-option-card__sub">Send instantly to another Copay user</span>
+                  <div className="send-select__card-text">
+                    <span className="send-select__card-title">Send money to Copay User</span>
+                    <span className="send-select__card-sub">Send money to a Copay user's wallet</span>
                   </div>
-                  <ChevronRightIcon size={18} color="#bbb" />
+                  <span className="send-select__card-arrow">
+                    <ChevronRightIcon size={16} color="#fff" />
+                  </span>
                 </button>
 
-                <button className="send-option-card" type="button" onClick={enterBankPick}>
-                  <span className="send-option-card__icon send-option-card__icon--bank">
-                    <BankIcon size={20} color="#fff" />
+                <button className="send-select__card" type="button" onClick={enterBankPick}>
+                  <span className="send-select__card-icon send-select__card-icon--bank">
+                    <BankIcon size={22} color="#999" />
                   </span>
-                  <div className="send-option-card__text">
-                    <span className="send-option-card__title">Copay to Other Bank</span>
-                    <span className="send-option-card__sub">Transfer to any Nigerian bank account</span>
+                  <div className="send-select__card-text">
+                    <span className="send-select__card-title">Transfer to Bank Account</span>
+                    <span className="send-select__card-sub">Withdraw to bank account of your choice</span>
                   </div>
-                  <ChevronRightIcon size={18} color="#bbb" />
+                  <span className="send-select__card-arrow">
+                    <ChevronRightIcon size={16} color="#fff" />
+                  </span>
                 </button>
+
               </div>
+
+              <button className="send-select__atm-banner" type="button">
+                <MapPinIcon size={20} color="#e8453c" />
+                <span className="send-select__atm-text">Click here to find our nearby merchant or ATM</span>
+                <ChevronRightIcon size={16} color="#fff" />
+              </button>
             </div>
           </>
         )}

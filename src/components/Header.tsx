@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router';
-import { BellIcon, SettingsIcon, MenuIcon } from './Icons';
+import { BellIcon, SettingsIcon, MenuIcon, UserIcon } from './Icons';
 
 interface HeaderProps {
   notifCount: number;
@@ -19,7 +19,7 @@ export default function Header({ notifCount, onBellClick, onMenuClick }: HeaderP
           aria-label="Open navigation"
           onClick={onMenuClick}
         >
-          <MenuIcon size={22} color="#111" />
+          <MenuIcon size={22} color="currentColor" />
         </button>
 
         <button
@@ -29,7 +29,7 @@ export default function Header({ notifCount, onBellClick, onMenuClick }: HeaderP
           onClick={() => navigate('/profile')}
         >
           <div className="app-header__avatar" aria-hidden="true">
-            <span className="app-header__avatar-initials">DA</span>
+            <UserIcon size={20} color="currentColor" />
           </div>
         </button>
       </div>
@@ -41,7 +41,7 @@ export default function Header({ notifCount, onBellClick, onMenuClick }: HeaderP
           aria-label={`Notifications${notifCount > 0 ? `, ${notifCount} unread` : ''}`}
           onClick={onBellClick}
         >
-          <BellIcon size={22} color="#111" />
+          <BellIcon size={22} color="currentColor" />
           {notifCount > 0 && (
             <span className="app-header__notif-badge" aria-hidden="true">
               {notifCount > 9 ? '9+' : notifCount}
@@ -54,7 +54,7 @@ export default function Header({ notifCount, onBellClick, onMenuClick }: HeaderP
           aria-label="Settings"
           onClick={() => navigate('/settings')}
         >
-          <SettingsIcon size={22} color="#111" />
+          <SettingsIcon size={22} color="currentColor" />
         </button>
       </div>
     </header>

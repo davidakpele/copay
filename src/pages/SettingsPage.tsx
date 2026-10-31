@@ -1,17 +1,20 @@
 import { useState, useRef } from 'react';
 import AppShell from '../components/AppShell';
+import {
+  UserIcon, GlobeIcon,
+  CheckCircleIcon, CardIcon, WalletIcon,
+} from '../components/Icons';
 
 /* ─── Types ─────────────────────────────────────────────────────── */
-type Tab = 'profile' | 'security' | 'notifications' | 'preferences' | 'pin';
+type Tab = 'profile' | 'security' | 'notifications' | 'pin';
 
 /* ─── Inline icons ───────────────────────────────────────────────── */
-function UserSvg()   { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.8"/><path d="M4 20c0-4 3.5-6 8-6s8 2 8 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>; }
 function ShieldSvg() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l7 4v5c0 5-3.5 9-7 10C8.5 20 5 16 5 11V6l7-4z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>; }
 function BellSvg()   { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><path d="M10 20a2 2 0 004 0" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>; }
-function GlobeSvg()  { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.8"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>; }
 function KeySvg()    { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="8" cy="15" r="4" stroke="currentColor" strokeWidth="1.8"/><path d="M11.8 11.8L20 3.6l1.4 1.4-2.2 2.2 2.2 2.2-1.4 1.4-2.2-2.2-2.3 2.3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>; }
 function CameraSvg() { return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="13" r="4" stroke="currentColor" strokeWidth="1.8"/></svg>; }
 function LockSvg()   { return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" strokeWidth="1.8"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/><circle cx="12" cy="16" r="1.2" fill="currentColor"/></svg>; }
+function UserSvg()   { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.8"/><path d="M4 20c0-4 3.5-6 8-6s8 2 8 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>; }
 
 /* ─── Shared primitives ─────────────────────────────────────────── */
 function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void }) {
@@ -176,10 +179,10 @@ function ProfileTab() {
         </div>
         <div className="st-info-cards">
           {[
-            { icon: '👤', label: 'Username',    value: '@ada.okafor'        },
-            { icon: '🆔', label: 'Customer ID', value: '#COP-00284719'      },
-            { icon: '📅', label: 'Member Since', value: 'January 2023'      },
-            { icon: '🌍', label: 'Country',      value: 'Nigeria'            },
+            { icon: <UserIcon size={16} color="#666" />,   label: 'Username',     value: '@ada.okafor'   },
+            { icon: <CardIcon size={16} color="#666" />,   label: 'Customer ID',  value: '#COP-00284719' },
+            { icon: <WalletIcon size={16} color="#666" />, label: 'Member Since', value: 'January 2023'  },
+            { icon: <GlobeIcon size={16} color="#666" />,  label: 'Country',      value: 'Nigeria'       },
           ].map(({ icon, label, value }) => (
             <div key={label} className="st-info-card">
               <div className="st-info-card__icon">{icon}</div>
@@ -322,58 +325,8 @@ function NotificationsTab() {
         </Card>
         <Card icon={<BellSvg />} title="Marketing">
           <div className="st-toggle-list">
-            <Row label="Promotional Offers" sub="Tips, offers and product updates">     <Toggle on={s.marketing} onChange={() => tog('marketing')} /></Row>
-            <Row label="Weekly Digest"      sub="Summary of your account activity">     <Toggle on={s.digest}    onChange={() => tog('digest')}    /></Row>
-          </div>
-        </Card>
-      </Section>
-    </div>
-  );
-}
-
-/* ─── Preferences tab ────────────────────────────────────────────── */
-function PreferencesTab() {
-  const [selectedTheme, setSelectedTheme] = useState<'light' | 'dark' | 'system'>('light');
-  const [language, setLanguage] = useState('English');
-  const [currency, setCurrency] = useState('USD');
-
-  return (
-    <div className="st-content">
-      <Section title="Preferences" subtitle="Customise your app experience.">
-
-        {/* Theme */}
-        <Card icon={<GlobeSvg />} title="Appearance">
-          <div className="st-theme-grid">
-            {(['light', 'dark', 'system'] as const).map((t) => (
-              <label key={t} className={`st-theme-option${selectedTheme === t ? ' st-theme-option--active' : ''}`}>
-                <input type="radio" name="theme" value={t} checked={selectedTheme === t} onChange={() => setSelectedTheme(t)} className="sr-only" />
-                {t === 'light'  && <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="1.8"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>}
-                {t === 'dark'   && <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"/></svg>}
-                {t === 'system' && <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="1.8"/><path d="M8 21h8M12 17v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>}
-                <span>{t.charAt(0).toUpperCase() + t.slice(1)}</span>
-              </label>
-            ))}
-          </div>
-        </Card>
-
-        {/* Language + currency */}
-        <Card icon={<GlobeSvg />} title="Localisation">
-          <div className="st-form-grid">
-            <div className="st-form-group">
-              <label>Language</label>
-              <select className="st-select" value={language} onChange={(e) => setLanguage(e.target.value)}>
-                <option>English</option><option>French</option><option>Yoruba</option><option>Igbo</option><option>Hausa</option>
-              </select>
-            </div>
-            <div className="st-form-group">
-              <label>Display Currency</label>
-              <select className="st-select" value={currency} onChange={(e) => setCurrency(e.target.value)}>
-                <option>USD</option><option>NGN</option><option>GBP</option><option>EUR</option>
-              </select>
-            </div>
-          </div>
-          <div className="st-form-actions">
-            <button className="st-btn-primary" type="button">Save Preferences</button>
+            <Row label="Promotional Offers" sub="Tips, offers and product updates"><Toggle on={s.marketing} onChange={() => tog('marketing')} /></Row>
+            <Row label="Weekly Digest"      sub="Summary of your account activity"><Toggle on={s.digest}    onChange={() => tog('digest')}    /></Row>
           </div>
         </Card>
       </Section>
@@ -404,7 +357,9 @@ function PinTab() {
         {hasPin ? (
           <div className="st-pin-set-banner">
             <div className="st-pin-set-banner__left">
-              <span className="st-pin-set-banner__icon">🔒</span>
+              <span className="st-pin-set-banner__icon">
+                <CheckCircleIcon size={22} color="#16a34a" />
+              </span>
               <div>
                 <p className="st-pin-set-banner__title">Transfer PIN is set</p>
                 <p className="st-pin-set-banner__sub">Your PIN is active and required for all transfers.</p>
@@ -414,7 +369,12 @@ function PinTab() {
           </div>
         ) : (
           <div className="st-pin-notset-banner">
-            <span className="st-pin-notset-banner__icon">⚠️</span>
+            <span className="st-pin-notset-banner__icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 2L2 20h20L12 2z" stroke="#d97706" strokeWidth="1.8" strokeLinejoin="round"/>
+                <path d="M12 9v4M12 17h.01" stroke="#d97706" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </span>
             <div>
               <p className="st-pin-set-banner__title">No Transfer PIN set</p>
               <p className="st-pin-set-banner__sub">You need a PIN to authorise transfers. Set one now.</p>
@@ -489,11 +449,10 @@ function PinTab() {
 
 /* ─── Tab config ─────────────────────────────────────────────────── */
 const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
-  { id: 'profile',       label: 'Profile',       icon: <UserSvg />   },
-  { id: 'security',      label: 'Security',       icon: <KeySvg />    },
-  { id: 'notifications', label: 'Notifications',  icon: <BellSvg />   },
-  { id: 'preferences',   label: 'Preferences',    icon: <GlobeSvg />  },
-  { id: 'pin',           label: 'Transfer PIN',   icon: <LockSvg />   },
+  { id: 'profile',       label: 'Profile',       icon: <UserSvg />  },
+  { id: 'security',      label: 'Security',      icon: <KeySvg />   },
+  { id: 'notifications', label: 'Notifications', icon: <BellSvg />  },
+  { id: 'pin',           label: 'Transfer PIN',  icon: <LockSvg />  },
 ];
 
 /* ─── Page ───────────────────────────────────────────────────────── */
@@ -504,21 +463,18 @@ export default function SettingsPage() {
     profile:       <ProfileTab />,
     security:      <SecurityTab />,
     notifications: <NotificationsTab />,
-    preferences:   <PreferencesTab />,
     pin:           <PinTab />,
   };
 
   return (
-    <AppShell title="Settings" subtitle="Manage your account, preferences and security.">
+    <AppShell title="Settings" subtitle="Manage your account and security.">
       <div className="st-page">
 
-        {/* Title */}
         <div className="st-page-header">
           <h1 className="st-page-title">Settings</h1>
           <p className="st-page-subtitle">Manage your account preferences and security.</p>
         </div>
 
-        {/* Tabs */}
         <div className="st-tabs">
           {TABS.map((t) => (
             <button
@@ -533,7 +489,6 @@ export default function SettingsPage() {
           ))}
         </div>
 
-        {/* Panel */}
         <div className="st-panel">
           {content[active]}
         </div>
@@ -542,4 +497,3 @@ export default function SettingsPage() {
     </AppShell>
   );
 }
-

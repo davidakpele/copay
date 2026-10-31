@@ -37,7 +37,7 @@ export const SERVICES: BillService[] = [
   { id: 3, name: 'Cable TV',    category: 'tv',          color: 'cyan',   image: '/assets/images/cabletv-bills.png',     route: '/bills/cable-tv'    },
   { id: 4, name: 'Data',        category: 'data',        color: 'black',  image: '/assets/images/airtime-bills.png',     route: '/bills/data'        },
   { id: 5, name: 'Shopping',    category: 'shopping',    color: 'purple', image: '/assets/images/shopping-bills.png',    route: '/bills/shopping'    },
-  { id: 6, name: 'Electricity', category: 'electricity', color: 'green',  image: '/assets/images/electricity_bill.png', route: '/bills/electricity' },
+  { id: 6, name: 'Electricity', category: 'electricity', color: 'yellow', image: '/assets/images/electricity_bill.png', route: '/bills/electricity' },
 ];
 
 export const NETWORKS = [
